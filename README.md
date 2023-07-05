@@ -1,8 +1,17 @@
 # Human Host Depletion
 
-Pipeline which removes human DNA from microbial shotgun samples.  
+**Pipeline which removes human DNA from microbial shotgun samples.**
+
+How to use pipeline:
+- Create Minimap References needed for Host Depletion  
+	- Run the *create_minimap_indexes/1_nonPangenome_humanRefs.sh* to download hg38 + T2T genome and convert them into minimap2 indexes  
+  	- Run the *create_minimap_indexes/2_download_pangenome_fastqs.sh* to download all 94 pangenome references  
+  	- Run the *create_minimap_indexes/3_create_pangenome_minimap_indexes.sh* to convert pangenome references into minimap2 indexes  
+- Run Host Depletion Pipeline with Pangenome: *pangenome_host_deplete.sh*  
+- Run Host Depletion Pipeline with Pangenome + hg38 + T2T: *hg38_T2T_pangenome_host_deplete.sh*
   
-Human references used for depletion:
+  
+Info on Human references used for depletion:
 
 - GRCH38
 	- description: host reference genome for human (outdated)
