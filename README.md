@@ -30,4 +30,4 @@ Info on Human references used for depletion:
 	- reference (human): https://humanpangenome.org , https://www.ncbi.nlm.nih.gov/bioproject/730823 , https://github.com/human-pangenomics/HPP_Year1_Assemblies
 	- reference link (download): 
 		- https://s3-us-west-2.amazonaws.com/human-pangenomics/index.html?prefix=working/
-		- Downloaded these using X script
+		- Downloaded these using *create_minimap_indexes/2_download_pangenome_fastqs.sh* script
