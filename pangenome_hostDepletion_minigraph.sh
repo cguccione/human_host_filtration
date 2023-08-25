@@ -33,7 +33,7 @@ filepath=/panfs/cguccion/23_08_14_pangenome_minigraph/
 cd $filepath
 
 #Sample specific files
-sample_name=TCGA-05-4395-01A-01D-1203_110913_SN208_0238_BC008YACXX_s_8_rg.sorted.filtered.R1.trimmed
+sample_name=TCGA-05.sorted.filtered.R1.trimmed
 
 #Convert fastq file into a fasta file for input into minigraph
 awk 'NR%4 == 1 {print ">" $0} NR%4 == 2 {print}' $filepath/$sample_name.fastq > $filepath/$sample_name.fa
