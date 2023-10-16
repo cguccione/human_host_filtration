@@ -3,22 +3,17 @@
 **Pipeline which removes human DNA from microbial shotgun samples.**
 
 How to use pipeline:
+- Clone this Repo
+- Create Conda Env: human-depletion.yml
 - Create Minimap References needed for Host Depletion  
 	- Run the *create_minimap_indexes/1_nonPangenome_humanRefs.sh* to download hg38 + T2T genome and convert them into minimap2 indexes  
   	- Run the *create_minimap_indexes/2_download_pangenome_fastqs.sh* to download all 94 pangenome references  
   	- Run the *create_minimap_indexes/3_create_pangenome_minimap_indexes.sh* to convert pangenome references into minimap2 indexes  
-- Run Host Depletion Pipeline with Pangenome: *pangenome_host_deplete.sh*  
-- Run Host Depletion Pipeline with Pangenome + hg38 + T2T: *hg38_T2T_pangenome_host_deplete.sh*
-
-*New* version of pangenome in pipeline, using gfa:
-- Instead of using all 94 pangenomes, can use a single graph file (more detail in email on pros/cons of approach)
-	- Download minigraph and gfatools
- 		- minigraph: https://github.com/lh3/minigraph
-        - Download pangenome file:
-		- `wget https://s3-us-west-2.amazonaws.com/human-pangenomics/pangenomes/freeze/freeze1/minigraph/hprc-v1.0-minigraph-chm13.gfa.gz`
+- Run Host Depletion Pipeline with Pangenome + hg38 + T2T:
+	- Modify *process.multiprep.pangenome.adapter-filter.pe.sbatch* to apply to your particular
+ 	- Modify & Run *process.multiprep.pangenome.adapter-filter.pe.sh*	
 
 Info on Human references used for depletion:
-
 - GRCH38
 	- description: host reference genome for human (outdated)
 	- reference: GCF_000001405.40 (GRCh38.p14)
