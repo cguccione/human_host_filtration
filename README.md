@@ -7,10 +7,10 @@ This pipeline is designed to remove human DNA from microbial shotgun samples.
 1. **Clone the Repository**  
    `git clone [repository-link]`
 
-   2. **Setup Conda Environment**  
+2. **Setup Conda Environment**  
       `conda env create -f human-depletion.yml`
 
-      3. **Prepare Minimap References**  
+3. **Prepare Minimap References**  
          - Download hg38 + T2T genome and convert to minimap2 indexes:  
               `bash create_minimap_indexes/1_nonPangenome_humanRefs.sh`
                  - Download all 94 pangenome references:  
@@ -32,4 +32,3 @@ This pipeline is designed to remove human DNA from microbial shotgun samples.
 | **Pangenome**  | First draft of Human Pangenome, comprising genomes of 47 people.                                 | [Human Pangenome Project](https://humanpangenome.org)<br>[NCBI BioProject](https://www.ncbi.nlm.nih.gov/bioproject/730823)<br>[GitHub Repository](https://github.com/human-pangenomics/HPP_Year1_Assemblies)<br>[Download Link](https://s3-us-west-2.amazonaws.com/human-pangenomics/index.html?prefix=working/)<br>[Graph File](https://github.com/human-pangenomics/hpp_pangenome_resources#minigraph)<br>[Associated Paper](https://www.nature.com/articles/s41586-023-05896-x) | Liao, W., et al. (2023). A draft human pangenome reference. Nature, 617(7960), 312-324. [DOI](https://doi.org/10.1038/s41586-023-05896-x)                                                                                                     |
 
 Please cite the corresponding references when using this pipeline in your work.
-
