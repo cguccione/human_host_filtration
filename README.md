@@ -10,19 +10,38 @@ This pipeline is designed to remove human DNA from microbial shotgun samples.
 2. **Setup Conda Environment**  
       `conda env create -f human-depletion.yml`
 
-3. **Prepare Minimap References**  
-         - Download hg38 + T2T genome and convert to minimap2 indexes:  
-              `bash create_minimap_indexes/1_nonPangenome_humanRefs.sh`
-                 - Download all 94 pangenome references:  
-                      `bash create_minimap_indexes/2_download_pangenome_fastqs.sh`
-                         - Convert pangenome references to minimap2 indexes:  
-                              `bash create_minimap_indexes/3_create_pangenome_minimap_indexes.sh`
+## Choose a Host Depletion Method 
 
-                              4. **Run the Pipeline**  
-                                 - Customize `process.multiprep.pangenome.adapter-filter.pe.sbatch` to your specific requirements.
-                                    - Modify and run:  
-                                         `bash process.multiprep.pangenome.adapter-filter.pe.sh`
+### HG38 + T2T + Movi Pangenome Depletion (recommended)
 
+1. **Prepare Minimap References**
+   - Download hg38 + T2T genome and convert to minimap2 indexes: `bash create_minimap_indexes/1_nonPangenome_humanRefs.sh`
+
+-----
+### HG38 + T2T + Sequential Pangenome Depletion (most aggressive)
+
+1. **Prepare Minimap References**
+   - Download hg38 + T2T genome and convert to minimap2 indexes: `bash create_minimap_indexes/1_nonPangenome_humanRefs.sh`
+   - Download all 94 pangenome references: `bash create_minimap_indexes/2_download_pangenome_fastqs.sh`
+   - Convert pangenome references to minimap2 indexes: `bash create_minimap_indexes/3_create_pangenome_minimap_indexes.sh`
+
+5. **Run the Pipeline**  
+   - Customize `process.multiprep.pangenome.adapter-filter.pe.sbatch` to your specific requirements.
+   - Modify and run:  `bash process.multiprep.pangenome.adapter-filter.pe.sh`
+
+-----
+### HG38 + T2T Depletion
+
+1. **Prepare Minimap References**
+   - Download hg38 + T2T genome and convert to minimap2 indexes: `bash create_minimap_indexes/1_nonPangenome_humanRefs.sh`
+
+-----
+### HG38 Depletion (least aggressive)
+
+1. **Prepare Minimap References**
+   - Download hg38 genome and convert to minimap2 indexes: `bash create_minimap_indexes/1_nonPangenome_humanRefs.sh`
+
+-----
 ## References Used for Depletion
 
 | Reference  | Description                                                                                         | Links                                                                                                                                                                                                                                                                                                     | Citation                                                                                                                                                                                                                                             |
