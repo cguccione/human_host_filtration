@@ -2,7 +2,7 @@
 
 This is a bioinformatics pipeline designed to provide highly-conservative depletion of human reads from metagenomic sequencing data. The pipeline is designed to be flexible and can be used with any host reference genome(s), though certain specific human reference genomes are suggested. The pipeline is designed to be used with paired-end Illumina sequencing data, but can be easily modified to work with single-end data. The pipeline is designed for SLURM and PBS job schedulers, but can be easily modified to run independently.
 
-Implementation details are discussed in [Guccione et al. (2024)](). A preprint is available [here]().
+Implementation details are discussed in [Guccione and Patel et al. (2024)](). A preprint is available [here]().
 
 ## Setup
 
@@ -50,9 +50,9 @@ This pipeline has several modes that can be executed independently depending on 
   * Human host filration by indexing (GRCh38 + T2T-CHM13v2.0 + HPRC) 
 
 ## References
-Please cite [Guccione et al. (2024)]() when using this pipeline in your work.
+Please cite [Guccione and Patel et al. (2024)]() when using this pipeline in your work.
 ```
-Guccione, C., et al. (2024). Human host depletion: a bioinformatics pipeline for highly-conservative depletion of human reads from metagenomic sequencing data. [DOI]()
+Guccione, C., Patel L., et al. (2024). Human host depletion: a bioinformatics pipeline for highly-conservative depletion of human reads from metagenomic sequencing data. [DOI]()
 ```
 
 Additionally, the following human reference genomes are used in this pipeline.
