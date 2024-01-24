@@ -1,11 +1,15 @@
 #!/bin/bash
 #
 
+source config.lucas.sh
+return
+
 # configure experiment parameters
 IN="data"
 OUT="data/host-filtered"
 MODE="PE" # "SE" (single-end) or "PE" (paired-end)
-METHODS=("ALIGN-HPRC", "INDEX-HPRC") # any combination of "ALIGN-HG38", "ALIGN-T2T", "ALIGN-HPRC", or "INDEX-HPRC"
+METHODS=("ALIGN-HPRC" "INDEX-HPRC") # any combination of "ALIGN-HG38", "ALIGN-T2T", "ALIGN-HPRC", or "INDEX-HPRC"
+SAVE_INTERMEDIATE=1 # 0 for TRUE and 1 for FALSE
 
 # configure index filtration parameters
 METRIC="custom" # "max", "average", or "custom"
@@ -13,14 +17,14 @@ THRESHOLD=0.175 # suggested thresholds are __ for "max", __ for "average", and 0
 MIN_RUN_LENGTH=5
 
 # configure software and reference paths
-MOVI_PATH="~/software/Movi/build/movi-default" # path to movi-default executable
-MOVI_INDEX_PATH="/panfs/lpatel/reference/movi_all" # path to prebuilt movi_index.bin
-MINIMAP2_PATH="/home/lpatel/software/miniconda3/envs/human-depletion/bin/minimap2" # path to minimap2 executable
-MINIMAP2_HG38_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloaded_fastqs/fastq_files/pangenome_individual_mmi/human-GRC-db.mmi" # one index
-MINIMAP2_T2T_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloaded_fastqs/fastq_files/pangenome_individual_mmi/human-GCA-phix-db.mmi" # one index
-MINIMAP2_HPRC_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloaded_fastqs/fastq_files/pangenome_individual_mmi" # directory of indexes
+MOVI_PATH="/path/to/movi-default" # path to movi-default executable
+MOVI_INDEX_PATH="ref/movi" # path to prebuilt movi_index.bin
+MINIMAP2_PATH="$(which minimap2)" # path to minimap2 executable
+MINIMAP2_HG38_INDEX_PATH="ref/mmi/hg38.mmi" # one index
+MINIMAP2_T2T_INDEX_PATH="ref/mmi/t2t.mmi" # one index
+MINIMAP2_HPRC_INDEX_PATH="ref/mmi" # directory of indexes
 ADAPTERS="ref/known_adapters.fna"
-TMPDIR="/panfs/lpatel/tmp"
+TMPDIR="${TMPDIR}"
 
 # END CONFIGURATION
 

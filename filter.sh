@@ -42,18 +42,32 @@ paste "$TMPDIR/r1_files.txt" "$TMPDIR/r2_files.txt" | while IFS=$'\t' read -r r1
     fi
     
     # first, run fastp
-    echo ${file_map["FASTP"]}
+    echo "Running FASTP..."
+    #bash "${file_map['FASTP']}" "$r1_file" "$r2_file"
+    in_file="${OUT}/fastp/$(basename "$r1_file" | sed 's/_R1//').FASTP.fastq"
 
     # next, run each host filtration method
-    for key in "$(METHODS[@])"; do
+    for key in "${METHODS[@]}"; do
         script="${file_map[$key]}"
-        if [[ -f "$script" && -x "$script" ]]; then
-            #bash "$script" "$r1_file" "$r2_file"
+        if [[ -f "$script" ]]; then
+            echo "Running $key filtration..."
+            bash "$script" "$in_file"
+            continue
         else
             echo "Key $key not valid or file-path $script not found."
+            exit 1
         fi
+
+        if [ "$SAVE_INTERMEDIATE" -eq 0 ]; then
+          mkdir -p "${OUT}/${key,,}"
+          mv "${TMPDIR}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq" 
+        else
+            in_file="${TMPDIR}/$(basename "$r1_file" | sed 's/_R1//').adapter_filtered.fastq"
+        fi 
+
     done
 done
 
-echo "Cleaning up $TMPDIR"
+echo "Cleaning up $TMPDIR
+ls $TMPDIR
 rm -r $TMPDIR

@@ -17,6 +17,7 @@ process_fastp() {
   fi
 
   mkdir -p ${OUT}/fastp
+  echo "fastp ${fastp_options}"
   fastp ${fastp_options} > "${OUT}/fastp/${basename1/_R1/}.adapter_filtered.fastq"
 }
 
