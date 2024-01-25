@@ -47,33 +47,6 @@ def calculate_custom_metric(pml_values, min_run_length=5):
     normalized_hybrid_score = hybrid_score / len(pml_values) if len(pml_values) > 0 else 0
     return normalized_hybrid_score
 
-def compute_confusion_matrix(tn, fp, fn, tp):
-    """
-    Computes statistics from confusion matrix and prints them.
-
-    :param tn: Count of true negatives
-    :param fp: Count of false positives
-    :param fn: Count of false negatives
-    :param tp: Count of true positives
-    """
-    # Calculating statistics
-    accuracy = (tp + tn) / (tp + tn + fp + fn)
-    precision = tp / (tp + fp) if (tp + fp) != 0 else 0
-    recall = tp / (tp + fn) if (tp + fn) != 0 else 0
-    f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) != 0 else 0
-
-    # Printing the confusion matrix
-    print("Confusion Matrix:")
-    print(f"TN: {tn}, FP: {fp}")
-    print(f"FN: {fn}, TP: {tp}")
-
-    # Printing the calculated statistics
-    print("\nStatistics:")
-    print(f"Accuracy: {accuracy:.8f}")
-    print(f"Precision: {precision:.8f}")
-    print(f"Recall: {recall:.8f}")
-    print(f"F1 Score: {f1_score:.8f}\n")
-
 def process_file(pml_file, fastq_file, out_path, metric, threshold, min_run_length):
     base_filename = os.path.basename(pml_file).rsplit('.', 1)[0]
 
@@ -85,7 +58,6 @@ def process_file(pml_file, fastq_file, out_path, metric, threshold, min_run_leng
          open(human_output_path, 'w') as human_out, \
          open(non_human_output_path, 'w') as non_human_out:
         
-        tp, tn, fp, fn = 0, 0, 0, 0
         while True:
             pml_lines = [pml.readline().strip() for _ in range(4)]
             fastq_lines = [fastq.readline().strip() for _ in range(8)]
@@ -124,22 +96,11 @@ def process_file(pml_file, fastq_file, out_path, metric, threshold, min_run_leng
             fastq_format2 = f'{fastq_id2}\n{sequence2}\n+\n{quality2}\n'
 
             if metric_value1 > threshold or metric_value2 > threshold: 
-                if 'HUMAN' in fastq_id1:
-                    tp += 1    
-                elif 'MICROBE' in fastq_id1:
-                    fp += 1
                     human_out.write(fastq_format1)
                     human_out.write(fastq_format2)
             else:
-                if 'HUMAN' in fastq_id1:
-                    fn += 1    
-                elif 'MICROBE' in fastq_id1:
-                    tn += 1
                     non_human_out.write(fastq_format1)
                     non_human_out.write(fastq_format2)
-
-        print(f"Running in {metric} mode with threshold {threshold} and min-run-length {min_run_length}.")
-        compute_confusion_matrix(tn, fp, fn, tp)
 
 def calculate_metric(pml_values, metric, min_run_length):
     """

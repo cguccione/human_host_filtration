@@ -25,13 +25,13 @@ MINIMAP2_HG38_INDEX_PATH="ref/mmi/hg38.mmi" # one index
 MINIMAP2_T2T_INDEX_PATH="ref/mmi/t2t.mmi" # one index
 MINIMAP2_HPRC_INDEX_PATH="ref/mmi" # directory of indexes
 ADAPTERS="ref/known_adapters.fna"
-TMPDIR="${TMPDIR}"
+TMP="" # path to temporary directory for writing
 
 # END CONFIGURATION
 
 # check variables are valid
-if [ -z "$TMPDIR" ]; then
-  echo "TMPDIR is not set. Please set TMPDIR to a valid directory."
+if [ -z "$TMP" ]; then
+  echo "TMP is not set. Please set TMP to a valid directory."
   exit 1
 fi
 

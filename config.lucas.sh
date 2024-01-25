@@ -5,7 +5,9 @@
 IN="data"
 OUT="data/host-filtered"
 MODE="PE" # "SE" (single-end) or "PE" (paired-end)
-METHODS=("ALIGN-HPRC" "INDEX-HPRC") # any combination of "ALIGN-HG38", "ALIGN-T2T", "ALIGN-HPRC", or "INDEX-HPRC"
+METHODS=("ALIGN-T2T" "INDEX-HPRC") # any combination of "ALIGN-HG38", "ALIGN-T2T", "ALIGN-HPRC", or "INDEX-HPRC"
+SAVE_INTERMEDIATE=1
+THREADS=7
 
 # configure index filtration parameters
 METRIC="custom" # "max", "average", or "custom"
@@ -13,20 +15,20 @@ THRESHOLD=0.175 # suggested thresholds are __ for "max", __ for "average", and 0
 MIN_RUN_LENGTH=5
 
 # configure software and reference paths
-MOVI_PATH="~/software/Movi/build/movi-default" # path to movi-default executable
-MOVI_INDEX_PATH="/panfs/lpatel/reference/movi_all" # path to prebuilt movi_index.bin
+MOVI_PATH="/home/lpatel/software/Movi/build/movi-default" # path to movi-default executable
+MOVI_INDEX_PATH="/scratch/movi_hg48_chm13_hprc94" # path to prebuilt movi_index.bin
 MINIMAP2_PATH="/home/lpatel/software/miniconda3/envs/human-depletion/bin/minimap2" # path to minimap2 executable
 MINIMAP2_HG38_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloaded_fastqs/fastq_files/pangenome_individual_mmi/human-GRC-db.mmi" # one index
 MINIMAP2_T2T_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloaded_fastqs/fastq_files/pangenome_individual_mmi/human-GCA-phix-db.mmi" # one index
 MINIMAP2_HPRC_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloaded_fastqs/fastq_files/pangenome_individual_mmi" # directory of indexes
 ADAPTERS="ref/known_adapters.fna"
-TMPDIR="/panfs/lpatel/tmp"
+TMP="/panfs/lpatel/tmp"
 
 # END CONFIGURATION
 
 # check variables are valid
-if [ -z "$TMPDIR" ]; then
-  echo "TMPDIR is not set. Please set TMPDIR to a valid directory."
+if [ -z "$TMP" ]; then
+  echo "TMP is not set. Please set TMP to a valid directory."
   exit 1
 fi
 

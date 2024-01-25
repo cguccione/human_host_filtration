@@ -17,7 +17,7 @@ source config.sh
 echo "Beginning host filtration on directory: ${IN}"
 
 # make new temp directory
-export TMPDIR="${TMPDIR}/$(basename $(mktemp -d))"
+export TMPDIR="${TMP}/$(basename $(mktemp -d))"
 mkdir -p ${TMPDIR}
 echo $TMPDIR
 
@@ -62,7 +62,7 @@ paste "$TMPDIR/r1_files.txt" "$TMPDIR/r2_files.txt" | while IFS=$'\t' read -r r1
             mv "${TMPDIR}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq" "${OUT}/${key,,}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
             in_file="${OUT}/${key,,}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
         else
-            in_file="${TMPDIR}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
+            in_file="${TMPDIR}/$(basename "$r1_file" .fastq | sed 's/_R1//').${key}.fastq"
         fi 
     done
 
@@ -72,4 +72,4 @@ done
 
 echo "Cleaning up $TMPDIR"
 ls $TMPDIR
-rm -r $TMPDIR
+#rm -r $TMPDIR

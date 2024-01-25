@@ -18,7 +18,7 @@ fi
 # First, compute pseudo matching lengths
 cmd="$MOVI_PATH query $MOVI_INDEX_PATH $f"
 echo $cmd
-eval $cmd
+eval $cmd 2>&1
 # Check if command was successful
 if [ $? -ne 0 ]; then
   echo "Error: Failed to compute pseudo matching lengths."
@@ -34,7 +34,7 @@ fi
 # Next, convert PMLs to readable format
 cmd="$MOVI_PATH view $f.default.mpml.bin > $f.mpml.txt"
 echo $cmd
-eval $cmd
+eval $cmd 2>&1
 # Check if command was successful
 if [ $? -ne 0 ]; then
   echo "Error: Failed to convert PMLs to readable format."
@@ -51,6 +51,7 @@ if [ $lines_mpml_txt -ne $expected_lines_mpml_txt ]; then
   exit 1
 fi
 
+echo "python scripts/filter_pmls.py $f.mpml.txt $f $TMPDIR"
 python scripts/filter_pmls.py $f.mpml.txt $f $TMPDIR
 
 # Check if new .fastq files exist
@@ -59,4 +60,6 @@ if [ ! -f "$TMPDIR/${basename}.fastq.mpml.non-human.fastq" ]; then
   exit 1
 fi
 
-mv "$TMPDIR/${basename}.fastq.mpml.non-human.fastq" "$TMPDIR/${basename}.INDEX-HPRC.fastq"
+new_basename="${basename%.*}"
+echo "$TMPDIR/${basename}.fastq.mpml.non-human.fastq" "$TMPDIR/${new_basename}.INDEX-HPRC.fastq"
+mv "$TMPDIR/${basename}.fastq.mpml.non-human.fastq" "$TMPDIR/${new_basename}.INDEX-HPRC.fastq"
