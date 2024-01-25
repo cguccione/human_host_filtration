@@ -59,13 +59,16 @@ paste "$TMPDIR/r1_files.txt" "$TMPDIR/r2_files.txt" | while IFS=$'\t' read -r r1
         fi
 
         if [ "$SAVE_INTERMEDIATE" -eq 0 ]; then
-          mkdir -p "${OUT}/${key,,}"
-          mv "${TMPDIR}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq" 
+            mkdir -p "${OUT}/${key,,}"
+            mv "${TMPDIR}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq" "${OUT}/${key,,}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
+            in_file="${OUT}/${key,,}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
         else
-            in_file="${TMPDIR}/$(basename "$r1_file" | sed 's/_R1//').adapter_filtered.fastq"
+            in_file="${TMPDIR}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
         fi 
-
     done
+
+    echo "Splitting into R1/R2..."
+
 done
 
 echo "Cleaning up $TMPDIR
