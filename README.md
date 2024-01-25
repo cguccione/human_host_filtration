@@ -7,7 +7,7 @@ Implementation details are discussed in [Guccione and Patel et al. (2024)](). A 
 ## Setup
 
 First, clone the repository.
-```
+```bash
 git clone https://github.com/cguccione/human_host_depletion
 ```
 
@@ -17,37 +17,65 @@ Next, ensure your environment has the following packages installed:
 * [Samtools](https://github.com/lh3/samtools)
 * [Movi](https://github.com/mohsenzakeri/Movi)
 
-Alternatively, a prebuilt [conda](https://docs.conda.io/en/latest/#) environment is provided for convenient installation. Movi does not have a conda package, so it must be installed separately. See the [installation instructions for Movi]().
-```
+We recommend using the provided prebuilt [conda](https://docs.conda.io/en/latest/#) to install the required packages. Movi does not have a conda package, so it must be installed separately. See the [installation instructions for Movi](https://github.com/mohsenzakeri/Movi#install-movi-and-its-dependencies-from-source).
+```bash
 conda env create -f human-depletion.yml
 ```
 
-Next, download the human reference genomes to be used for depletion. We recommend [GRCh38](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.26/), [T2T-CHM13v2.0](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/), and all currently available pangenomes from the [Human Pangenome Reference Consortium (HPRC)](https://humanpangenome.org). See the table below for additional information and citations for the reference genomes used in this pipeline. A download script is provided for convenience.
-```
+Next, download the human reference genomes to be used for filtration. We recommend [GRCh38](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.26/), [T2T-CHM13v2.0](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/), and all currently available pangenomes from the [Human Pangenome Reference Consortium (HPRC)](https://humanpangenome.org). See the table below for additional information and citations for the reference genomes used in this pipeline. A download script is provided for convenience.
+```bash
 bash download_references.sh
 ```
 
 Next, create Minimap2 and Movi indexes for the previously downloaded reference genomes. A script is provided for convenience.
-```
+```bash
 bash create_indexes.sh
 ```
 
-Next, configure the setup script with the files you'd like to host filter.
+Next, configure the file `config.sh` with the necessary files and executables for your environment. The file `config.sh` is sourced by all other scripts in the pipeline, so it is important to ensure that it is configured correctly. Some of the variables in `config.sh` have specific constraints that must be followed. These constraints are described in the comments of `config.sh`. An example is provided below:
+```bash
+# configure experiment parameters
+IN="data"
+OUT="data/host-filtered"
+MODE="PE" # "SE" (single-end) or "PE" (paired-end)
+METHODS=("ALIGN-HPRC" "INDEX-HPRC") # any combination of "ALIGN-HG38", "ALIGN-T2T", "ALIGN-HPRC", or "INDEX-HPRC"; do not comma separate
+SAVE_INTERMEDIATE=1 # 0 for TRUE and 1 for FALSE
+THREADS=7 # changes to THREADS must also be reflected in #SBATCH --ntasks=7 within `filter.sh`
+
+# configure index filtration parameters
+METRIC="custom" # "max", "average", or "custom"
+THRESHOLD=0.175 # suggested thresholds are 31 for "max", 3.206 for "average", and 0.175 for "custom"
+MIN_RUN_LENGTH=5
+
+# configure software and reference paths
+MOVI_PATH="/path/to/movi-default" # path to movi-default executable
+MOVI_INDEX_PATH="ref/movi" # path to prebuilt movi_index.bin
+MINIMAP2_HG38_INDEX_PATH="ref/mmi/hg38.mmi" # one index
+MINIMAP2_T2T_INDEX_PATH="ref/mmi/t2t.mmi" # one index
+MINIMAP2_HPRC_INDEX_PATH="ref/mmi" # directory of indexes
+ADAPTERS="ref/known_adapters.fna"
+TMP="" # path to temporary directory for writing
 ```
 
-```
-
-Finally, run the pipeline.
+Finally, run the pipeline. Outputs will be found in the directory specified by the `OUT` variable in `config.sh`.
 ```
 bash filter.sh
 ```
 
 ## Usage
+In [Guccione and Patel et al. (2024)]() we found that the choice of human reference genome(s) and the method of filtration can have a significant impact on the resulting metagenomic data. This pipeline ensembles several different human reference genomes and filtration methods to provide a highly-conservative, user-configurable method for removal of human reads from metagenomic sequencing data. Users may choose to run one or all methods in sequence.
+
 This pipeline has several modes that can be executed independently depending on the preferences of the user. The four modes are:
   * Human host filration by alignment (GRCh38) 
   * Human host filration by alignment (GRCh38 + T2T-CHM13v2.0) 
   * Human host filration by alignment (GRCh38 + T2T-CHM13v2.0 + HPRC) 
   * Human host filration by indexing (GRCh38 + T2T-CHM13v2.0 + HPRC) 
+
+## Troubleshooting
+
+> **"I am trying to host-deplete my data using an 'ALIGN' method, but my outputs have zero reads. The logs note "No input sequence specified." What is going on?"**
+
+This issue typically arises when running the pipeline in paired-end mode with unconventional read IDs. Minimap2 requires that paired-end reads have the same read ID, with the only difference being the `/1` or `/2` suffix. If your read IDs do not follow this convention, the pipeline will not be able to properly pair your reads. To resolve this issue, you must modify your read IDs to follow the convention.
 
 ## References
 Please cite [Guccione and Patel et al. (2024)]() when using this pipeline in your work.
