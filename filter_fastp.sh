@@ -3,8 +3,8 @@
 # date: 12/22/23 
 # description: Script to run fastp on R1/R2 or interleaved FASTQ inputs as part of a full host filtration pipeline.
 
-conda activate human-depletion
 source config.sh
+conda activate human-depletion
 
 process_fastp() {
   local r1=$1

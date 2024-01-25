@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 # author: Lucas Patel (lpatel@ucsd.edu)
 # date: 12/22/23 
 # description: Script to run fastp on arbitrary inputs as part of a full host filtration pipeline. The adapters used are based on manual curation and conversion of ____.
@@ -14,7 +14,6 @@
 #SBATCH --error=logs/%x-%A_%a.err
 
 source config.sh
-echo $TMPDIR
 echo "Beginning host filtration on directory: ${IN}"
 
 # make new temp directory
@@ -37,26 +36,26 @@ paste "$TMPDIR/r1_files.txt" "$TMPDIR/r2_files.txt" | while IFS=$'\t' read -r r1
 
     # check the base names
     if [[ "$base_r1" != "$base_r2" ]]; then
-        echo "Mismatch in FASTQ file names: $r1_file and $r2_file"
+        echo "Error: Mismatch in FASTQ file names: $r1_file and $r2_file"
         exit 1
     fi
     
     # first, run fastp
     echo "Running FASTP..."
     #bash "${file_map['FASTP']}" "$r1_file" "$r2_file"
-    in_file="${OUT}/fastp/$(basename "$r1_file" | sed 's/_R1//').FASTP.fastq"
-
+    in_file="${OUT}/fastp/$(basename "$r1_file" .fastq | sed 's/_R1//').FASTP.fastq"
+    
     # next, run each host filtration method
     for key in "${METHODS[@]}"; do
         script="${file_map[$key]}"
         if [[ -f "$script" ]]; then
             echo "Running $key filtration..."
             bash "$script" "$in_file"
-            continue
         else
             echo "Key $key not valid or file-path $script not found."
-            exit 1
+            continue 
         fi
+        echo "SAVE_INTERMEDIATE is '$SAVE_INTERMEDIATE'"
 
         if [ "$SAVE_INTERMEDIATE" -eq 0 ]; then
             mkdir -p "${OUT}/${key,,}"
@@ -68,9 +67,9 @@ paste "$TMPDIR/r1_files.txt" "$TMPDIR/r2_files.txt" | while IFS=$'\t' read -r r1
     done
 
     echo "Splitting into R1/R2..."
-
+    bash split_fastq.sh "$in_file"
 done
 
-echo "Cleaning up $TMPDIR
+echo "Cleaning up $TMPDIR"
 ls $TMPDIR
 rm -r $TMPDIR

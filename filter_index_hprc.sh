@@ -9,19 +9,46 @@ conda activate human-depletion
 f=$1
 basename=$(basename "$f" .fastq)
 
-# Check if .bin file exists before running MOVI query
-if [ ! -f "$f.default.mpml.bin" ]; then
-  echo "$MOVI_PATH query $MOVI_INDEX_PATH $f"
-  eval "$MOVI_PATH query $MOVI_INDEX_PATH $f"
-else
-  echo "Skipping MOVI query: $f.default.mpml.bin already exists."
+# Check if input file is provided and exists
+if [ -z "$f" ] || [ ! -f "$f" ]; then
+  echo "Error: FASTQ input not provided or does not exist."
+  exit 1
 fi
 
-# Check if .mpml.txt file exists before converting PMLs
-if [ ! -f "$f.mpml.txt" ]; then
-  eval "$MOVI_PATH view $f.default.mpml.bin > $f.mpml.txt"
-else
-  echo "Skipping MOVI view: $f.mpml.txt already exists."
+# First, compute pseudo matching lengths
+cmd="$MOVI_PATH query $MOVI_INDEX_PATH $f"
+echo $cmd
+eval $cmd
+# Check if command was successful
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to compute pseudo matching lengths."
+  exit 1
+fi
+
+# Check if .bin file exists before converting PMLs
+if [ ! -f "$f.default.mpml.bin" ]; then
+  echo "Error: $f.default.mpml.bin does not exist."
+  exit 1
+fi
+
+# Next, convert PMLs to readable format
+cmd="$MOVI view $f.default.mpml.bin > $f.mpml.txt"
+echo $cmd
+eval $cmd
+# Check if command was successful
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to convert PMLs to readable format."
+  exit 1
+fi
+
+# Compare line counts
+lines_reads=$(wc -l < "$f")
+lines_mpml_txt=$(wc -l < "$f.mpml.txt")
+expected_lines_mpml_txt=$((lines_reads / 2))
+
+if [ $lines_mpml_txt -ne $expected_lines_mpml_txt ]; then
+  echo "Error: Line count of $f.mpml.txt does not match expected count."
+  exit 1
 fi
 
 python scripts/filter_pmls.py $f.mpml.txt $f $TMPDIR
@@ -32,4 +59,4 @@ if [ ! -f "$TMPDIR/${basename}.fastq.mpml.non-human.fastq" ]; then
   exit 1
 fi
 
-mv "$TMPDIR/${basename}.fastq.mpml.non-human.fastq" "$TMPDIR/${basename}.HPRC-INDEX.fastq"
+mv "$TMPDIR/${basename}.fastq.mpml.non-human.fastq" "$TMPDIR/${basename}.INDEX-HPRC.fastq"
