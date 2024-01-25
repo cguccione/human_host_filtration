@@ -66,16 +66,16 @@ bash filter.sh
 In [Guccione and Patel et al. (2024)]() we found that the choice of human reference genome(s) and the method of filtration can have a significant impact on the resulting metagenomic data. This pipeline ensembles several different human reference genomes and filtration methods to provide a highly-conservative, user-configurable method for removal of human reads from metagenomic sequencing data. Users may choose to run one or all methods in sequence.
 
 This pipeline has several modes that can be executed independently depending on the preferences of the user. The four modes are:
-  * Human host filration by alignment (GRCh38) 
-  * Human host filration by alignment (GRCh38 + T2T-CHM13v2.0) 
-  * Human host filration by alignment (GRCh38 + T2T-CHM13v2.0 + HPRC) 
-  * Human host filration by indexing (GRCh38 + T2T-CHM13v2.0 + HPRC) 
+  * Human host filtration by alignment (GRCh38) 
+  * Human host filtration by alignment (GRCh38 + T2T-CHM13v2.0) 
+  * Human host filtration by alignment (GRCh38 + T2T-CHM13v2.0 + HPRC) 
+  * Human host filtration by indexing (GRCh38 + T2T-CHM13v2.0 + HPRC) 
 
 ## Troubleshooting
 
 > **"I am trying to host-deplete my data using an 'ALIGN' method, but my outputs have zero reads. The logs note "No input sequence specified." What is going on?"**
 
-This issue typically arises when running the pipeline in paired-end mode with unconventional read IDs. Minimap2 requires that paired-end reads have the same read ID, with the only difference being the `/1` or `/2` suffix. If your read IDs do not follow this convention, the pipeline will not be able to properly pair your reads. To resolve this issue, you must modify your read IDs to follow the convention.
+This issue typically arises when running the pipeline in paired-end mode with unconventional read IDs. Minimap2 requires that paired-end reads have the same read ID, with the only difference being the `/1` or `/2` suffix. If your read IDs do not follow this convention or use an unconventional suffix, the pipeline will not be able to properly pair your reads. To resolve this issue, you must modify your read IDs to follow the convention.
 
 ## References
 Please cite [Guccione and Patel et al. (2024)]() when using this pipeline in your work.

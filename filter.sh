@@ -29,46 +29,58 @@ find "$IN" -maxdepth 1 -type f -name '*.fastq*' | grep -vE '_R[12]' > "$TMPDIR/o
 echo "Found $(wc -l < "$TMPDIR/r1_files.txt") R1 FASTQ files" && echo "Found $(wc -l < "$TMPDIR/r2_files.txt") R2 FASTQ files" && [ $(wc -l < "$TMPDIR/r1_files.txt") -eq $(wc -l < "$TMPDIR/r2_files.txt") ] || echo "Warning: The number of R1 and R2 FASTQ files is not the same."
 echo "Found $(wc -l < "$TMPDIR/other_files.txt") other files"
 
-# read R1 and R2 files line by line simultaneously
-paste "$TMPDIR/r1_files.txt" "$TMPDIR/r2_files.txt" | while IFS=$'\t' read -r r1_file r2_file; do
-base_r1="${r1_file%_R1*}"
-base_r2="${r2_file%_R2*}"
+process_files() {
+  local r1_file="$1"
+  local r2_file="${2:-}"  # Second argument is optional
+  local base_name
 
-# check the base names
-if [[ "$base_r1" != "$base_r2" ]]; then
-  echo "Error: Mismatch in FASTQ file names: $r1_file and $r2_file"
-  exit 1
-fi
-
-# first, run fastp
-echo "Running FASTP..."
-#bash "${file_map['FASTP']}" "$r1_file" "$r2_file"
-in_file="${OUT}/fastp/$(basename "$r1_file" .fastq | sed 's/_R1//').FASTP.fastq"
-
-# next, run each host filtration method
-for key in "${METHODS[@]}"; do
-  script="${file_map[$key]}"
-  if [[ -f "$script" ]]; then
-    echo "Running $key filtration..."
-    bash "$script" "$in_file"
+  # Determine base name based on R1 or single-end file
+  if [[ -n "$r2_file" ]]; then
+    base_name="${r1_file%_R1*}"
+    if [[ "$base_name" != "${r2_file%_R2*}" ]]; then
+      echo "Error: Mismatch in FASTQ file names: $r1_file and $r2_file"
+      exit 1
+    fi
   else
-    echo "Key $key not valid or file-path $script not found."
-    continue 
+    base_name="${r1_file%.*}"
   fi
-  echo "SAVE_INTERMEDIATE is '$SAVE_INTERMEDIATE'"
 
-  if [ "$SAVE_INTERMEDIATE" -eq 0 ]; then
-    mkdir -p "${OUT}/${key,,}"
-    mv "${TMPDIR}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq" "${OUT}/${key,,}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
-    in_file="${OUT}/${key,,}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
-  else
-    in_file="${TMPDIR}/$(basename "$r1_file" .fastq | sed 's/_R1//').${key}.fastq"
-  fi 
+  echo "Running FASTP..."
+  #bash "${file_map['FASTP']}" "$r1_file" "$r2_file"
+  local in_file="${OUT}/fastp/$(basename "$base_name").FASTP.fastq"
+
+  for key in "${METHODS[@]}"; do
+    local script="${file_map[$key]}"
+    if [[ -f "$script" ]]; then
+      echo "Running $key filtration..."
+      bash "$script" "$in_file"
+    else
+      echo "Key $key not valid or file-path $script not found."
+      continue
+    fi
+
+    if [ "$SAVE_INTERMEDIATE" -eq 0 ]; then
+      mkdir -p "${OUT}/${key,,}"
+      mv "${TMPDIR}/$(basename "$base_name").${key}.fastq" "${OUT}/${key,,}/$(basename "$base_name").${key}.fastq"
+      in_file="${OUT}/${key,,}/$(basename "$base_name").${key}.fastq"
+    else
+      in_file="${TMPDIR}/$(basename "$base_name").${key}.fastq"
+    fi
+  done
+
+  echo "Splitting into R1/R2..."
+  bash split_fastq.sh "$in_file"
+}
+
+# process PE
+paste "$TMPDIR/r1_files.txt" "$TMPDIR/r2_files.txt" | while IFS=$'\t' read -r r1_file r2_file; do
+  process_files "$r1_file" "$r2_file"
 done
 
-echo "Splitting into R1/R2..."
-bash split_fastq.sh "$in_file"
-done
+# process SE
+while IFS= read -r file; do
+  process_files "$file"
+done < "$TMPDIR/other_files.txt"
 
 echo "Cleaning up $TMPDIR"
 ls $TMPDIR
