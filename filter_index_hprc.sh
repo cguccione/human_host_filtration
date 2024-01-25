@@ -32,7 +32,7 @@ if [ ! -f "$f.default.mpml.bin" ]; then
 fi
 
 # Next, convert PMLs to readable format
-cmd="$MOVI view $f.default.mpml.bin > $f.mpml.txt"
+cmd="$MOVI_PATH view $f.default.mpml.bin > $f.mpml.txt"
 echo $cmd
 eval $cmd
 # Check if command was successful

@@ -18,7 +18,7 @@ process_fastp() {
 
   mkdir -p ${OUT}/fastp
   echo "fastp ${fastp_options}"
-  fastp ${fastp_options} > "${OUT}/fastp/${basename1/_R1/}.adapter_filtered.fastq"
+  fastp ${fastp_options} > "${OUT}/fastp/${basename1/_R1/}.FASTP.fastq"
 }
 
 process_fastp "$1" "$2"
