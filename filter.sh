@@ -31,43 +31,43 @@ echo "Found $(wc -l < "$TMPDIR/other_files.txt") other files"
 
 # read R1 and R2 files line by line simultaneously
 paste "$TMPDIR/r1_files.txt" "$TMPDIR/r2_files.txt" | while IFS=$'\t' read -r r1_file r2_file; do
-    base_r1="${r1_file%_R1*}"
-    base_r2="${r2_file%_R2*}"
+base_r1="${r1_file%_R1*}"
+base_r2="${r2_file%_R2*}"
 
-    # check the base names
-    if [[ "$base_r1" != "$base_r2" ]]; then
-        echo "Error: Mismatch in FASTQ file names: $r1_file and $r2_file"
-        exit 1
-    fi
-    
-    # first, run fastp
-    echo "Running FASTP..."
-    #bash "${file_map['FASTP']}" "$r1_file" "$r2_file"
-    in_file="${OUT}/fastp/$(basename "$r1_file" .fastq | sed 's/_R1//').FASTP.fastq"
-    
-    # next, run each host filtration method
-    for key in "${METHODS[@]}"; do
-        script="${file_map[$key]}"
-        if [[ -f "$script" ]]; then
-            echo "Running $key filtration..."
-            bash "$script" "$in_file"
-        else
-            echo "Key $key not valid or file-path $script not found."
-            continue 
-        fi
-        echo "SAVE_INTERMEDIATE is '$SAVE_INTERMEDIATE'"
+# check the base names
+if [[ "$base_r1" != "$base_r2" ]]; then
+  echo "Error: Mismatch in FASTQ file names: $r1_file and $r2_file"
+  exit 1
+fi
 
-        if [ "$SAVE_INTERMEDIATE" -eq 0 ]; then
-            mkdir -p "${OUT}/${key,,}"
-            mv "${TMPDIR}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq" "${OUT}/${key,,}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
-            in_file="${OUT}/${key,,}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
-        else
-            in_file="${TMPDIR}/$(basename "$r1_file" .fastq | sed 's/_R1//').${key}.fastq"
-        fi 
-    done
+# first, run fastp
+echo "Running FASTP..."
+#bash "${file_map['FASTP']}" "$r1_file" "$r2_file"
+in_file="${OUT}/fastp/$(basename "$r1_file" .fastq | sed 's/_R1//').FASTP.fastq"
 
-    echo "Splitting into R1/R2..."
-    bash split_fastq.sh "$in_file"
+# next, run each host filtration method
+for key in "${METHODS[@]}"; do
+  script="${file_map[$key]}"
+  if [[ -f "$script" ]]; then
+    echo "Running $key filtration..."
+    bash "$script" "$in_file"
+  else
+    echo "Key $key not valid or file-path $script not found."
+    continue 
+  fi
+  echo "SAVE_INTERMEDIATE is '$SAVE_INTERMEDIATE'"
+
+  if [ "$SAVE_INTERMEDIATE" -eq 0 ]; then
+    mkdir -p "${OUT}/${key,,}"
+    mv "${TMPDIR}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq" "${OUT}/${key,,}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
+    in_file="${OUT}/${key,,}/$(basename "$r1_file" | sed 's/_R1//').${key}.fastq"
+  else
+    in_file="${TMPDIR}/$(basename "$r1_file" .fastq | sed 's/_R1//').${key}.fastq"
+  fi 
+done
+
+echo "Splitting into R1/R2..."
+bash split_fastq.sh "$in_file"
 done
 
 echo "Cleaning up $TMPDIR"
