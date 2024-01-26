@@ -7,6 +7,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=lpatel@ucsd.edu
 #SBATCH --time=24:00:00
+#SBATCH --partition=highmem
 #SBATCH --ntasks=7
 #SBATCH --nodes=1
 #SBATCH --mem=200gb
@@ -14,20 +15,7 @@
 #SBATCH --error=logs/%x-%A_%a.err
 
 source config.sh
-echo "Beginning host filtration on directory: ${IN}"
-
-# make new temp directory
-export TMPDIR="${TMP}/$(basename $(mktemp -d))"
-mkdir -p ${TMPDIR}
-echo $TMPDIR
-
-# find all candidate fastq files for filtration
-find "$IN" -maxdepth 1 -type f -name '*_R1*.fastq*' -exec sh -c 'for f; do echo "$f" >> "$TMPDIR/r1_files.txt"; done' sh {} +
-find "$IN" -maxdepth 1 -type f -name '*_R2*.fastq*' -exec sh -c 'for f; do echo "$f" >> "$TMPDIR/r2_files.txt"; done' sh {} +
-find "$IN" -maxdepth 1 -type f -name '*.fastq*' | grep -vE '_R[12]' > "$TMPDIR/other_files.txt"
-
-echo "Found $(wc -l < "$TMPDIR/r1_files.txt") R1 FASTQ files" && echo "Found $(wc -l < "$TMPDIR/r2_files.txt") R2 FASTQ files" && [ $(wc -l < "$TMPDIR/r1_files.txt") -eq $(wc -l < "$TMPDIR/r2_files.txt") ] || echo "Warning: The number of R1 and R2 FASTQ files is not the same."
-echo "Found $(wc -l < "$TMPDIR/other_files.txt") other files"
+echo "Beginning host filtration (job array mode) on directory: ${IN}"
 
 process_files() {
   local r1_file="$1"
@@ -72,16 +60,10 @@ process_files() {
   bash split_fastq.sh "$in_file"
 }
 
-# process PE
-paste "$TMPDIR/r1_files.txt" "$TMPDIR/r2_files.txt" | while IFS=$'\t' read -r r1_file r2_file; do
-  process_files "$r1_file" "$r2_file"
-done
-
-# process SE
-while IFS= read -r file; do
-  process_files "$file"
-done < "$TMPDIR/other_files.txt"
-
-echo "Cleaning up $TMPDIR"
-ls $TMPDIR
-#rm -r $TMPDIR
+line_num=$SLURM_ARRAY_TASK_ID
+read -r file <<< $(sed -n "${line_num}p" "$TMPDIR/all_files.txt")
+mate=
+if [[ "$file" == *"_R1"* ]]; then
+  mate="${file/_R1/_R2}"
+fi
+process_files "$file" "$mate"
