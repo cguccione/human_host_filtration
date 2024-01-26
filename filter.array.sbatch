@@ -7,10 +7,10 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=lpatel@ucsd.edu
 #SBATCH --time=24:00:00
-#SBATCH --partition=highmem
+#SBATCH --partition=short
 #SBATCH --ntasks=7
 #SBATCH --nodes=1
-#SBATCH --mem=200gb
+#SBATCH --mem=128gb
 #SBATCH --output=logs/%x-%A_%a.out
 #SBATCH --error=logs/%x-%A_%a.err
 
