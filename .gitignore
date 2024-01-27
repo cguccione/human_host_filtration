@@ -1,0 +1,47 @@
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Output files #
+################
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+
+# Temporary files #
+###################
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Configuration files #
+########################
+config.lucas.sh
+config.caitlin.sh
+# Include other configuration files specific to your pipeline
+
+# Environment files #
+#####################
+.env
+.venv/
+*.pyc
+
+# IDE specific files #
+######################
+.idea/
+*.iml
+.vscode/
+*.sublime-workspace
+
+# Project directories #
+######################
+data/host-filtered/
+logs/
