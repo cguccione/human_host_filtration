@@ -3,8 +3,9 @@
 # date: 1/23/2024
 # description: Script to run HPRC alignment on single interleaved FASTQ file.
 
-source config.sh
-conda activate human-depletion
+config_fn=$2
+source $config_fn
+conda activate $CONDA_ENV_NAME
 
 f=$1
 basename=$(basename "$f" .fastq)
@@ -29,5 +30,8 @@ if [ "${MODE}" == "PE" ]; then
 elif [ "${MODE}" == "SE" ]; then
   continue
 fi
+
+echo ""${TMPDIR}"/seqs.fastq"
+echo "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq" 
 
 mv "${TMPDIR}"/seqs.fastq "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq"

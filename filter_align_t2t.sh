@@ -3,8 +3,9 @@
 # date: 1/23/2024
 # description: Script to run T2T alignment on single interleaved FASTQ file.
 
-source config.sh
-conda activate human-depletion
+config_fn=$2
+source $config_fn
+conda activate $CONDA_ENV_NAME
 
 f=$1
 basename=$(basename "$f" .fastq)

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 
-source config.lucas.sh
+source config.caitlin.sh
 return
 
 # configure experiment parameters
@@ -42,3 +42,6 @@ file_map["ALIGN-HG38"]="filter_align_hg38.sh"
 file_map["ALIGN-T2T"]="filter_align_t2t.sh"
 file_map["ALIGN-HPRC"]="filter_align_hprc.sh"
 file_map["INDEX-HPRC"]="filter_index_hprc.sh"
+
+#conda
+CONDA_ENV_NAME=human-depletion
