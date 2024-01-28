@@ -5,7 +5,7 @@
 
 #SBATCH -J host_filter
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user=lpatel@ucsd.edu
+#SBATCH --mail-user=cguccion@ucsd.edu
 #SBATCH --time=24:00:00
 #SBATCH --partition=short
 #SBATCH --ntasks=7
@@ -14,7 +14,7 @@
 #SBATCH --output=logs/%x-%A_%a.out
 #SBATCH --error=logs/%x-%A_%a.err
 
-source config.sh
+source ${config_fn}
 echo "Beginning host filtration (job array mode) on directory: ${IN}"
 
 process_files() {
@@ -34,14 +34,14 @@ process_files() {
   fi
 
   echo "Running FASTP..."
-  bash "${file_map['FASTP']}" "$r1_file" "$r2_file"
+  bash "${file_map['FASTP']}" "$r1_file" "$r2_file" "$config_fn"
   local in_file="${OUT}/fastp/$(basename "$base_name").FASTP.fastq"
 
   for key in "${METHODS[@]}"; do
     local script="${file_map[$key]}"
     if [[ -f "$script" ]]; then
       echo "Running $key filtration..."
-      bash "$script" "$in_file"
+      bash "$script" "$in_file" "$config_fn"
     else
       echo "Key $key not valid or file-path $script not found."
       continue
@@ -57,7 +57,7 @@ process_files() {
   done
 
   echo "Splitting into R1/R2..."
-  bash split_fastq.sh "$in_file"
+  bash split_fastq.sh "$in_file" "$config_fn"
 }
 
 line_num=$SLURM_ARRAY_TASK_ID
@@ -66,4 +66,5 @@ mate=
 if [[ "$file" == *"_R1"* ]]; then
   mate="${file/_R1/_R2}"
 fi
+
 process_files "$file" "$mate"

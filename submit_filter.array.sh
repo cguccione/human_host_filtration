@@ -3,7 +3,10 @@
 # date: 12/22/23 
 # description: Script to run 
 
-source config.sh
+#config_fn="config.sh"
+config_fn="config.cg.100k.array.sh"
+source ${config_fn}
+export config_fn="${config_fn}"
 
 echo "Beginning host filtration (job array mode) on directory: ${IN}"
 
@@ -22,4 +25,5 @@ echo "Found $(wc -l < "$TMPDIR/other_files.txt") other files"
 cat "$TMPDIR/r1_files.txt" "$TMPDIR/other_files.txt" > "$TMPDIR/all_files.txt"
 num_jobs=$(wc -l < "$TMPDIR/all_files.txt")
 echo $num_jobs
+
 sbatch --array=1-$num_jobs filter.array.sbatch
