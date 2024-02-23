@@ -1,4 +1,4 @@
-# Human Host Depletion Pipeline
+# Human Host Filtration Pipeline
 
 
 This is a bioinformatics pipeline designed to provide highly-conservative depletion of human reads from metagenomic sequencing data. The pipeline is designed to be flexible and can be used with any host reference genome(s), though certain specific human reference genomes are suggested. The pipeline is designed to be used with paired-end Illumina sequencing data, but can be easily modified to work with single-end data. The pipeline is designed for SLURM and PBS job schedulers, but can be easily modified to run independently.
@@ -9,7 +9,7 @@ Implementation details are discussed in [Guccione and Patel et al. (2024)](). A 
 
 First, clone the repository.
 ```bash
-git clone https://github.com/cguccione/human_host_depletion
+git clone https://github.com/cguccione/human_host_filtration
 ```
 
 Next, ensure your environment has the following packages installed:
