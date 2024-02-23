@@ -82,12 +82,12 @@ def process_file(pml_file, fastq_file, out_path, metric, threshold, min_run_leng
                 print("Error: Read IDs do not match")
                 print(read_id1, fastq_id1.split()[0][1:])
                 continue
-
-            # Check if the first and fifth FASTQ lines match
+            
+            #Check if the first and fifth FASTQ lines match
             if fastq_id1.split('/')[0] != fastq_id2.split('/')[0]:
-                print("Error: FASTQ Read IDs do not match")
-                print(fastq_id1.split('/')[0], fastq_id2.split('/')[0])
-                continue
+                  print("WARNING: FASTQ Read IDs do not match")
+                  print(fastq_id1.split('/')[0], fastq_id2.split('/')[0])
+                  #continue
 
             metric_value1 = calculate_metric(pml_values1, metric, min_run_length)
             metric_value2 = calculate_metric(pml_values2, metric, min_run_length)

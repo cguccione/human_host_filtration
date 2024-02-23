@@ -18,20 +18,17 @@ fi
 
 # run minimap2 and samtools based on the mode (PE or SE)
 new_basename="${basename%.*}"
-cp "${f}" "${TMPDIR}"/seqs.fastq
+cp "${f}" "${TMPDIR}"/seqs_${new_basename}.fastq
 if [ "${MODE}" == "PE" ]; then
   for mmi in "${MINIMAP2_HPRC_INDEX_PATH}"/*.mmi
   do
     echo "Running minimap2 on ${mmi}"
-    minimap2 -2 -ax sr -t 7 "${mmi}" "${TMPDIR}"/seqs.fastq | \
-      samtools fastq -@ 1 -f 12 -F 256 > "${TMPDIR}"/seqs_new.fastq
-    mv "${TMPDIR}"/seqs_new.fastq "${TMPDIR}"/seqs.fastq
+    minimap2 -2 -ax sr -t 7 "${mmi}" "${TMPDIR}"/seqs_${new_basename}.fastq | \
+      samtools fastq -@ 1 -f 12 -F 256 > "${TMPDIR}"/seqs_new_${new_basename}.fastq
+    mv "${TMPDIR}"/seqs_new_${new_basename}.fastq "${TMPDIR}"/seqs_${new_basename}.fastq
   done
 elif [ "${MODE}" == "SE" ]; then
   continue
 fi
 
-echo ""${TMPDIR}"/seqs.fastq"
-echo "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq" 
-
-mv "${TMPDIR}"/seqs.fastq "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq"
+mv "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq"

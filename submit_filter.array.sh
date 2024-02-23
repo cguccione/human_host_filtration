@@ -3,8 +3,8 @@
 # date: 12/22/23 
 # description: Script to run 
 
+config_fn=$1
 #config_fn="config.sh"
-config_fn="config.cg.100k.array.sh"
 source ${config_fn}
 export config_fn="${config_fn}"
 

@@ -7,12 +7,14 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=cguccion@ucsd.edu
 #SBATCH --time=24:00:00
-#SBATCH --partition=short
-#SBATCH --ntasks=7
+#SBATCH --partition=short #highmem
+#SBATCH --ntasks=16
 #SBATCH --nodes=1
-#SBATCH --mem=128gb
+#SBATCH --mem=200gb
 #SBATCH --output=logs/%x-%A_%a.out
 #SBATCH --error=logs/%x-%A_%a.err
+
+### !!!#SBATCH --exclusive
 
 source ${config_fn}
 echo "Beginning host filtration (job array mode) on directory: ${IN}"
@@ -67,4 +69,10 @@ if [[ "$file" == *"_R1"* ]]; then
   mate="${file/_R1/_R2}"
 fi
 
+current_time=$(date +"%T")  # %T format specifier for HH:MM:SS
+echo "Time start: $current_time"
+
 process_files "$file" "$mate"
+
+current_time=$(date +"%T")  # %T format specifier for HH:MM:SS
+echo "Time end: $current_time"
