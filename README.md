@@ -20,17 +20,17 @@ Next, ensure your environment has the following packages installed:
 
 We recommend using the provided prebuilt [conda](https://docs.conda.io/en/latest/#) to install the required packages. Movi does not have a conda package, so it must be installed separately. See the [installation instructions for Movi](https://github.com/mohsenzakeri/Movi#install-movi-and-its-dependencies-from-source).
 ```bash
-conda env create -f human-depletion.yml
+conda env create -f human-filtration.yml
 ```
 
 Next, download the human reference genomes to be used for filtration. We recommend [GRCh38](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.26/), [T2T-CHM13v2.0](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/), and all currently available pangenomes from the [Human Pangenome Reference Consortium (HPRC)](https://humanpangenome.org). See the table below for additional information and citations for the reference genomes used in this pipeline. A download script is provided for convenience.
 ```bash
-bash download_references.sh
+bash scripts/download_references.sh
 ```
 
 Next, create Minimap2 and Movi indexes for the previously downloaded reference genomes. A script is provided for convenience.
 ```bash
-bash create_indexes.sh
+bash scripts/create_indexes.sh
 ```
 
 Next, configure the file `config.sh` with the necessary files and executables for your environment. The file `config.sh` is sourced by all other scripts in the pipeline, so it is important to ensure that it is configured correctly. Some of the variables in `config.sh` have specific constraints that must be followed. These constraints are described in the comments of `config.sh`. An example is provided below:

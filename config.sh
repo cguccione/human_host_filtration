@@ -44,4 +44,4 @@ file_map["ALIGN-HPRC"]="filter_align_hprc.sh"
 file_map["INDEX-HPRC"]="filter_index_hprc.sh"
 
 #conda
-CONDA_ENV_NAME=human-depletion
+CONDA_ENV_NAME=human-filtration
