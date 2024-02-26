@@ -1,8 +1,4 @@
 #!/bin/bash
-#
-
-source config.caitlin.sh
-return
 
 # configure experiment parameters
 IN="data"
