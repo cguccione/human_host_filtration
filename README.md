@@ -1,6 +1,7 @@
-# Human Host Filtration Pipeline
+# Human Host Filtration Pipeline - Barnacle Addition [Knight Lab Specific]
 
-
+**Note:** This branch follows the same protocol as the the main branch, except it is targeted at **Knight Lab specific users**. Here we provide paths that already exist in Barnacle2 so that users do not have to go download new data or update them. Paths last confirmed on 3/4/2024. 
+  
 This is a bioinformatics pipeline designed to provide highly-conservative depletion of human reads from metagenomic sequencing data. The pipeline is designed to be flexible and can be used with any host reference genome(s), though certain specific human reference genomes are suggested. The pipeline is designed to be used with paired-end Illumina sequencing data, but can be easily modified to work with single-end data. The pipeline is designed for SLURM and PBS job schedulers, but can be easily modified to run independently.
 
 Implementation details are discussed in [Guccione and Patel et al. (2024)]().
@@ -11,51 +12,48 @@ First, clone the repository.
 ```bash
 git clone https://github.com/cguccione/human_host_filtration
 ```
+Next, we want to switch to the barnacle branch since this will have all the updated paths.
+```bash
+cd human_host_filtration
+git checkout barnacle
+```
 
-Next, ensure your environment has the following packages installed:
-* [Fastp](https://github.com/OpenGene/fastp)
-* [Minimap2](https://github.com/lh3/minimap2)
-* [Samtools](https://github.com/lh3/samtools)
-* [Movi](https://github.com/mohsenzakeri/Movi)
+We recommend using the provided prebuilt [conda](https://docs.conda.io/en/latest/#) to install the required packages. Movi does not have a conda package, so it must be installed separately. Luckily, Lucas has already installed this for us on Barnacle2, so we can use his. If you are having issue with his install, we recommend re-installing following the steps on the main page.
 
-We recommend using the provided prebuilt [conda](https://docs.conda.io/en/latest/#) to install the required packages. Movi does not have a conda package, so it must be installed separately. See the [installation instructions for Movi](https://github.com/mohsenzakeri/Movi#install-movi-and-its-dependencies-from-source).
 ```bash
 conda env create -f human-filtration.yml
 ```
 
-Next, download the human reference genomes to be used for filtration. We recommend [GRCh38](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.26/), [T2T-CHM13v2.0](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/), and all currently available pangenomes from the [Human Pangenome Reference Consortium (HPRC)](https://humanpangenome.org). See the table below for additional information and citations for the reference genomes used in this pipeline. A download script is provided for convenience.
-```bash
-bash scripts/download_references.sh
-```
+We have already downloaded all the human references genomes needed for filtration on Barnacle2. See the table below for additional information and citations for the reference genomes used in this pipeline. 
 
-Next, create Minimap2 and Movi indexes for the previously downloaded reference genomes. A script is provided for convenience.
-```bash
-bash scripts/create_indexes.sh
-```
+We also already created Minimap2 and Movi indexes for the previously downloaded reference genomes and have them on Barnacle2. 
 
-Next, configure the file `config.sh` with the necessary files and executables for your environment. The file `config.sh` is sourced by all other scripts in the pipeline, so it is important to ensure that it is configured correctly. Some of the variables in `config.sh` have specific constraints that must be followed. These constraints are described in the comments of `config.sh`. An example is provided below:
+Next, configure the file `config.sh` with the necessary files and executables for your environment. For the sake of reproduciblity, I we recommend creating a new config file for every sample set that you host filter. Additionally, if you plan to try multiple different host filteration methods (often not necessary) we recommend a seperate config file for each approach to keep track of exactly waht was done.
+
+The file `config.sh` is sourced by all other scripts in the pipeline, so it is important to ensure that it is configured correctly. Some of the variables in `config.sh` have specific constraints that must be followed. These constraints are described in the comments of `config.sh`. An example is provided below:
 ```bash
 # configure experiment parameters
-IN="data"
-OUT="data/host-filtered"
-MODE="PE" # "SE" (single-end) or "PE" (paired-end)
-METHODS=("ALIGN-HPRC" "INDEX-HPRC") # any combination of "ALIGN-HG38", "ALIGN-T2T", "ALIGN-HPRC", or "INDEX-HPRC"; do not comma separate
+IN="/path/to/raw/fastq/files" 
+OUT="/path/of/output/host-filtered/files"
+MODE="PE" # "SE" (single-end) or "PE" (paired-end), majority of the data used in the Knight lab is paired-end
+METHODS=("ALIGN-HG38" "ALIGN-T2T" "INDEX-HPRC") # any combination of "ALIGN-HG38", "ALIGN-T2T", "ALIGN-HPRC"(Note: The way this is stored in barnacle currently, this will also filter for hg38 and T2T), or "INDEX-HPRC"; do not comma separate
 SAVE_INTERMEDIATE=1 # 0 for TRUE and 1 for FALSE
 THREADS=7 # changes to THREADS must also be reflected in #SBATCH --ntasks=7 within `filter.sh`
 
 # configure index filtration parameters
-METRIC="custom" # "max", "average", or "custom"
-THRESHOLD=0.175 # suggested thresholds are 31 for "max", 3.206 for "average", and 0.175 for "custom"
-MIN_RUN_LENGTH=5
+METRIC="custom" # "max", "average", or "custom" (custom was used in the paper)
+THRESHOLD=0.175 # suggested thresholds are 31 for "max", 3.206 for "average", and 0.175 for "custom" (0.175 was used in the paper)
+MIN_RUN_LENGTH=5 # part of the custom algorithm (5 was used in the paper)
 
 # configure software and reference paths
-MOVI_PATH="/path/to/movi-default" # path to movi-default executable
-MOVI_INDEX_PATH="ref/movi" # path to prebuilt movi_index.bin
-MINIMAP2_HG38_INDEX_PATH="ref/mmi/hg38.mmi" # one index
-MINIMAP2_T2T_INDEX_PATH="ref/mmi/t2t.mmi" # one index
-MINIMAP2_HPRC_INDEX_PATH="ref/mmi" # directory of indexes
-ADAPTERS="ref/known_adapters.fna"
-TMP="" # path to temporary directory for writing
+MOVI_PATH="/panfs/cguccion/packages/lucas_Movi/Movi/build/movi-default"  # path to movi-default executable on barnacle
+MOVI_INDEX_PATH="/panfs/lpatel/reference/movi_all" # path to prebuilt movi_index.bin on barnacle
+MINIMAP2_PATH="minimap2" #Calling minimap2 from conda env
+MINIMAP2_HG38_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloaded_fastqs/fastq_files/pangenome_individual_mmi/human-GRC-db.mmi" # hg38 index on barnacle
+MINIMAP2_T2T_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloaded_fastqs/fastq_files/pangenome_individual_mmi/human-GCA-phix-db.mmi" # t2t index on barancle
+MINIMAP2_HPRC_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloaded_fastqs/fastq_files/pangenome_individual_mmi" # directory of pangenome indexes (including hg38 and t2t)
+ADAPTERS="ref/known_adapters.fna" #Known adapters (used in paper)
+TMP="/panfs/YOUR_USERNAME/tmp" #Change to your username on barnacle
 ```
 
 Finally, run the pipeline. Outputs will be found in the directory specified by the `OUT` variable in `config.sh`.
