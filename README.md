@@ -28,9 +28,11 @@ We have already downloaded all the human references genomes needed for filtratio
 
 We also already created Minimap2 and Movi indexes for the previously downloaded reference genomes and have them on Barnacle2. 
 
-Next, configure the file `config.sh` with the necessary files and executables for your environment. For the sake of reproduciblity, I we recommend creating a new config file for every sample set that you host filter. Additionally, if you plan to try multiple different host filteration methods (often not necessary) we recommend a seperate config file for each approach to keep track of exactly waht was done.
+## Running Code
 
-The file `config.sh` is sourced by all other scripts in the pipeline, so it is important to ensure that it is configured correctly. Some of the variables in `config.sh` have specific constraints that must be followed. These constraints are described in the comments of `config.sh`. An example is provided below:
+Configure the file `config.sh` with the necessary files and executables for your environment. For the sake of reproduciblity, I we recommend creating a new config file for every sample set that you host filter. Additionally, if you plan to try multiple different host filteration methods (often not necessary) we recommend a seperate config file for each approach to keep track of exactly what was done. A lot of items/paths in your config file will stay the same across runs, but your input/output paths will change with datasets.
+
+The file `config.sh` is sourced by all other scripts in the pipeline, so it is important to ensure that it is configured correctly. Some of the variables in `config.sh` have specific constraints that must be followed. These constraints are described in the comments of `config.sh`. An example of part of the config file is provided below:
 ```bash
 # configure experiment parameters
 IN="/path/to/raw/fastq/files" 
@@ -53,10 +55,19 @@ MINIMAP2_HG38_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloade
 MINIMAP2_T2T_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloaded_fastqs/fastq_files/pangenome_individual_mmi/human-GCA-phix-db.mmi" # t2t index on barancle
 MINIMAP2_HPRC_INDEX_PATH="/panfs/cguccion/23_06_25_Pangenome_Assembley/downloaded_fastqs/fastq_files/pangenome_individual_mmi" # directory of pangenome indexes (including hg38 and t2t)
 ADAPTERS="ref/known_adapters.fna" #Known adapters (used in paper)
-TMP="/panfs/YOUR_USERNAME/tmp" #Change to your username on barnacle
+TMP="/panfs/YOUR_USERNAME/tmp" #Change to your username on barnacle, create a TMP if you don't have one
 ```
 
-Finally, run the pipeline. Outputs will be found in the directory specified by the `OUT` variable in `config.sh`.
+Finally, run the pipeline. We recommend running in array forma. The first step is to edit the bash header to be your email ect.
+```
+vim filter.array.sbatch
+```
+We recommend making a copy of config.example and changing to your specific dataset. 
+```
+bash submit_filter.array.sh config.example.sh
+```
+
+If you want to run a single file at a time, then can just run 
 ```
 bash filter.sh
 ```
