@@ -58,7 +58,16 @@ ADAPTERS="ref/known_adapters.fna"
 TMP="" # path to temporary directory for writing
 ```
 
-Finally, run the pipeline. Outputs will be found in the directory specified by the `OUT` variable in `config.sh`.
+To run the pipeline, we recommend running in array format if you have more than one sample. The first step is to edit the bash header to run on your machine.
+```
+vim filter.array.sbatch
+```
+We recommend making a copy of config.example and changing to your specific dataset. 
+```
+bash submit_filter.array.sh config.example.sh
+```
+
+If you want to run a single file at a time, then can just run 
 ```
 bash filter.sh
 ```
