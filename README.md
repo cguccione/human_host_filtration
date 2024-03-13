@@ -28,9 +28,9 @@ Next, download the human reference genomes to be used for filtration. We recomme
 bash scripts/download_references.sh
 ```
 
-Next, create Minimap2 and Movi indexes for the previously downloaded reference genomes. A script is provided for convenience.
+Next, create Minimap2 and Movi indexes for the previously downloaded reference genomes. A script is provided for convenience to build minimap2 indexes. To build Movi indexes, please follow the [Movi instructions](https://github.com/mohsenzakeri/Movi) as some of the paths required are system-specific. A template is provided in `scripts/create_movi_index.sh`.
 ```bash
-bash scripts/create_indexes.sh
+bash scripts/create_minimap2_indexes.sh
 ```
 
 Next, configure the file `config.sh` with the necessary files and executables for your environment. The file `config.sh` is sourced by all other scripts in the pipeline, so it is important to ensure that it is configured correctly. Some of the variables in `config.sh` have specific constraints that must be followed. These constraints are described in the comments of `config.sh`. An example is provided below:
