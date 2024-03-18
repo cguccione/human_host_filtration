@@ -28,7 +28,13 @@ if [ "${MODE}" == "PE" ]; then
     mv "${TMPDIR}"/seqs_new.fastq "${TMPDIR}"/seqs.fastq
   done
 elif [ "${MODE}" == "SE" ]; then
-  continue
+  for mmi in "${MINIMAP2_HPRC_INDEX_PATH}"/*.mmi
+  do
+    echo "Running minimap2 on ${mmi}"
+    minimap2 -2 -ax sr -t 7 "${mmi}" "${TMPDIR}"/seqs.fastq | \
+      samtools fastq -@ 1 -f 4 -F 256 > "${TMPDIR}"/seqs_new.fastq
+    mv "${TMPDIR}"/seqs_new.fastq "${TMPDIR}"/seqs.fastq
+  done
 fi
 
 echo ""${TMPDIR}"/seqs.fastq"
