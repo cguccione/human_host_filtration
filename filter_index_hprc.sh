@@ -16,15 +16,31 @@ if [ -z "$f" ] || [ ! -f "$f" ]; then
   exit 1
 fi
 
-# First, compute pseudo matching lengths
-cmd="$MOVI_PATH query $MOVI_INDEX_PATH $f"
-echo $cmd
-eval $cmd 2>&1
-# Check if command was successful
-if [ $? -ne 0 ]; then
-  echo "Error: Failed to compute pseudo matching lengths."
-  exit 1
-fi
+retry_count=0
+max_retries=5
+
+while [ $retry_count -lt $max_retries ]; do
+  # First, compute pseudo matching lengths
+  cmd="$MOVI_PATH query $MOVI_INDEX_PATH $f"
+  echo $cmd
+  eval $cmd 2>&1
+
+  # Check if command was successful
+  if [ $? -ne 0 ]; then
+    echo "Attempt $(($retry_count + 1)) failed to compute pseudo matching lengths."
+    retry_count=$(($retry_count + 1))
+    continue
+  fi
+
+  # Check if .bin file exists after command execution
+  if [ -f "$f.default.mpml.bin" ]; then
+    echo "Successfully created $f.default.mpml.bin."
+    break
+  else
+    echo "Attempt $(($retry_count + 1)) failed to create $f.default.mpml.bin."
+    retry_count=$(($retry_count + 1))
+  fi
+done
 
 # Check if .bin file exists before converting PMLs
 if [ ! -f "$f.default.mpml.bin" ]; then

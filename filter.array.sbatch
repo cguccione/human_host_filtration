@@ -1,13 +1,13 @@
 #!/bin/bash -l
 # author: Lucas Patel (lpatel@ucsd.edu)
 # date: 12/22/23 
-# description: Script to run fastp on arbitrary inputs as part of a full host filtration pipeline. The adapters used are based on manual curation and conversion of ____.
+# description: Script to run fastp on arbitrary inputs as part of a full host filtration pipeline. The adapters used are based on manual curation.
 
 #SBATCH -J host_filter
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=cguccion@ucsd.edu
 #SBATCH --time=24:00:00
-#SBATCH --partition=short #highmem
+#SBATCH --partition=short
 #SBATCH --ntasks=16
 #SBATCH --nodes=1
 #SBATCH --mem=200gb
