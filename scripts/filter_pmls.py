@@ -12,7 +12,7 @@ import math
 
 THRESHOLDS = {
     'max': 31,
-    'average': 3.206,
+    'average': 3.306,
     'custom': 0.175
 }
 
