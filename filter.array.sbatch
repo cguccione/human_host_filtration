@@ -7,7 +7,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=cguccion@ucsd.edu
 #SBATCH --time=24:00:00
-#SBATCH --partition=short #highmem
+#SBATCH --partition=highmem
 #SBATCH --ntasks=16
 #SBATCH --nodes=1
 #SBATCH --mem=200gb
