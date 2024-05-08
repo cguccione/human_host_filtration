@@ -1,37 +1,23 @@
 #!/bin/bash -l
 # author: Lucas Patel (lpatel@ucsd.edu)
 # date: 12/22/23 
-# description: Script to run fastp on arbitrary inputs as part of a full host filtration pipeline. The adapters used are based on manual curation and conversion of ____.
+# description: Script to run fastp on arbitrary inputs as part of a full host filtration pipeline. The adapters used are based on manual curation.
 
 #SBATCH -J host_filter
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=cguccion@ucsd.edu
 #SBATCH --time=24:00:00
-#SBATCH --ntasks=7
+#SBATCH --partition=short
+#SBATCH --ntasks=16
 #SBATCH --nodes=1
 #SBATCH --mem=200gb
 #SBATCH --output=logs/%x-%A_%a.out
 #SBATCH --error=logs/%x-%A_%a.err
 
-config_fn="config.lucas.sh"
-#config_fn="config.cg.hmf.sh"
-#config_fn="config.cg.100k.sh"
+### !!!#SBATCH --exclusive
 
 source ${config_fn}
-echo "Beginning host filtration on directory: ${IN}"
-
-# make new temp directory
-export TMPDIR="${TMP}/$(basename $(mktemp -d))"
-mkdir -p ${TMPDIR}
-echo $TMPDIR
-
-# find all candidate fastq files for filtration
-find "$IN" -maxdepth 1 -type f -name '*_R1*.fastq*' -exec sh -c 'for f; do echo "$f" >> "$TMPDIR/r1_files.txt"; done' sh {} +
-find "$IN" -maxdepth 1 -type f -name '*_R2*.fastq*' -exec sh -c 'for f; do echo "$f" >> "$TMPDIR/r2_files.txt"; done' sh {} +
-find "$IN" -maxdepth 1 -type f -name '*.fastq*' | grep -vE '_R[12]' > "$TMPDIR/other_files.txt"
-
-echo "Found $(wc -l < "$TMPDIR/r1_files.txt") R1 FASTQ files" && echo "Found $(wc -l < "$TMPDIR/r2_files.txt") R2 FASTQ files" && [ $(wc -l < "$TMPDIR/r1_files.txt") -eq $(wc -l < "$TMPDIR/r2_files.txt") ] || echo "Warning: The number of R1 and R2 FASTQ files is not the same."
-echo "Found $(wc -l < "$TMPDIR/other_files.txt") other files"
+echo "Beginning host filtration (job array mode) on directory: ${IN}"
 
 process_files() {
   local r1_file="$1"
@@ -76,16 +62,17 @@ process_files() {
   bash split_fastq.sh "$in_file" "$config_fn"
 }
 
-# process PE
-paste "$TMPDIR/r1_files.txt" "$TMPDIR/r2_files.txt" | while IFS=$'\t' read -r r1_file r2_file; do
-  process_files "$r1_file" "$r2_file"
-done
+line_num=$SLURM_ARRAY_TASK_ID
+read -r file <<< $(sed -n "${line_num}p" "$TMPDIR/all_files.txt")
+mate=
+if [[ "$file" == *"_R1"* ]]; then
+  mate="${file/_R1/_R2}"
+fi
 
-# process SE
-while IFS= read -r file; do
-  process_files "$file"
-done < "$TMPDIR/other_files.txt"
+current_time=$(date +"%T")  # %T format specifier for HH:MM:SS
+echo "Time start: $current_time"
 
-echo "Cleaning up $TMPDIR"
-ls $TMPDIR
-#rm -r $TMPDIR
+process_files "$file" "$mate"
+
+current_time=$(date +"%T")  # %T format specifier for HH:MM:SS
+echo "Time end: $current_time"

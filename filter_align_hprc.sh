@@ -19,25 +19,29 @@ fi
 # run minimap2 and samtools based on the mode (PE or SE)
 new_basename="${basename%.*}"
 cp "${f}" "${TMPDIR}"/seqs.fastq
-if [ "${MODE}" == "PE" ]; then
+if [[ "${MODE}" == *"PE"* ]]; then
   for mmi in "${MINIMAP2_HPRC_INDEX_PATH}"/*.mmi
   do
-    echo "Running minimap2 on ${mmi}"
+    echo "Running minimap2 (PE) on ${mmi}"
     minimap2 -2 -ax sr -t "${THREADS}" "${mmi}" "${TMPDIR}"/seqs.fastq | \
       samtools fastq -@ "${THREADS}" -f 12 -F 256 > "${TMPDIR}"/seqs_new.fastq
     mv "${TMPDIR}"/seqs_new.fastq "${TMPDIR}"/seqs.fastq
   done
-elif [ "${MODE}" == "SE" ]; then
+fi
+
+if [[ "${MODE}" == *"SE"* ]]; then
   for mmi in "${MINIMAP2_HPRC_INDEX_PATH}"/*.mmi
   do
-    echo "Running minimap2 on ${mmi}"
-    minimap2 -2 -ax sr -t "${THREADS}" "${mmi}" "${TMPDIR}"/seqs.fastq | \
+    echo "Running minimap2 (SE) on ${mmi}"
+    minimap2 -2 -ax sr --no-pairing -t "${THREADS}" "${mmi}" "${TMPDIR}"/seqs.fastq | \
       samtools fastq -@ "${THREADS}" -f 4 -F 256 > "${TMPDIR}"/seqs_new.fastq
     mv "${TMPDIR}"/seqs_new.fastq "${TMPDIR}"/seqs.fastq
   done
 fi
 
-echo ""${TMPDIR}"/seqs.fastq"
-echo "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq" 
+python scripts/splitter.py "${TMPDIR}"/seqs.fastq "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq"
 
-mv "${TMPDIR}"/seqs.fastq "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq"
+#echo ""${TMPDIR}"/seqs.fastq"
+#echo "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq" 
+
+#mv "${TMPDIR}"/seqs.fastq "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq"
