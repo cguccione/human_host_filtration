@@ -18,9 +18,11 @@ fi
 
 # run minimap2 and samtools based on the mode (PE or SE)
 new_basename="${basename%.*}"
-if [ "${MODE}" == "PE" ]; then
+if [[ "${MODE}" == *"PE"* ]]; then
   minimap2 -2 -ax sr -t "${THREADS}" "${MINIMAP2_T2T_INDEX_PATH}" "${f}" | samtools fastq -@ "${THREADS}" -f 12 -F 256 > "${TMPDIR}/${new_basename}.ALIGN-T2T.fastq"
-elif [ "${MODE}" == "SE" ]; then
+fi
+
+if [[ "${MODE}" == *"SE"* ]]; then
   minimap2 -2 -ax sr -t "${THREADS}" "${MINIMAP2_T2T_INDEX_PATH}" "${f}" \
     | samtools fastq -@ "${THREADS}" -f 4 -F 256 > "${TMPDIR}/${new_basename}.ALIGN-T2T.fastq"
 fi

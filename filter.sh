@@ -13,7 +13,7 @@
 #SBATCH --output=logs/%x-%A_%a.out
 #SBATCH --error=logs/%x-%A_%a.err
 
-config_fn="config.lucas.sh"
+config_fn="config.creeping_fat_test.sh"
 #config_fn="config.cg.hmf.sh"
 #config_fn="config.cg.100k.sh"
 
@@ -26,27 +26,36 @@ mkdir -p ${TMPDIR}
 echo $TMPDIR
 
 # find all candidate fastq files for filtration
-find "$IN" -maxdepth 1 -type f -name '*_R1*.fastq*' -exec sh -c 'for f; do echo "$f" >> "$TMPDIR/r1_files.txt"; done' sh {} +
-find "$IN" -maxdepth 1 -type f -name '*_R2*.fastq*' -exec sh -c 'for f; do echo "$f" >> "$TMPDIR/r2_files.txt"; done' sh {} +
-find "$IN" -maxdepth 1 -type f -name '*.fastq*' | grep -vE '_R[12]' > "$TMPDIR/other_files.txt"
+find "$IN" -maxdepth 1 -type f \( -name '*_R1*.fastq' -o -name '*_R1*.fastq.gz' \) -exec sh -c 'for f; do echo "$f"; done >> "$TMPDIR/r1_files.txt"' sh {} +
+find "$IN" -maxdepth 1 -type f \( -name '*_R2*.fastq' -o -name '*_R2*.fastq.gz' \) -exec sh -c 'for f; do echo "$f"; done >> "$TMPDIR/r2_files.txt"' sh {} +
+find "$IN" -maxdepth 1 -type f \( -name '*.fastq' -o -name '*.fastq.gz' \) | grep -vE '_R[12]' > "$TMPDIR/other_files.txt"
 
 echo "Found $(wc -l < "$TMPDIR/r1_files.txt") R1 FASTQ files" && echo "Found $(wc -l < "$TMPDIR/r2_files.txt") R2 FASTQ files" && [ $(wc -l < "$TMPDIR/r1_files.txt") -eq $(wc -l < "$TMPDIR/r2_files.txt") ] || echo "Warning: The number of R1 and R2 FASTQ files is not the same."
 echo "Found $(wc -l < "$TMPDIR/other_files.txt") other files"
+
+strip_extensions() {
+  local file_name="$1"
+  local stripped_name="${file_name%.fastq.gz}"
+  stripped_name="${stripped_name%.fastq}"
+  echo "$stripped_name"
+}
 
 process_files() {
   local r1_file="$1"
   local r2_file="${2:-}"  # Second argument is optional
   local base_name
+  local base_name_r2
 
   # Determine base name based on R1 or single-end file
   if [[ -n "$r2_file" ]]; then
-    base_name="${r1_file%_R1*}"
-    if [[ "$base_name" != "${r2_file%_R2*}" ]]; then
+    base_name=$(strip_extensions "$r1_file")
+    base_name_r2=$(strip_extensions "$r2_file")
+    if [[ "${base_name%_R1*}" != "${base_name_r2%_R2*}" ]]; then
       echo "Error: Mismatch in FASTQ file names: $r1_file and $r2_file"
       exit 1
     fi
   else
-    base_name="${r1_file%.*}"
+    base_name=$(strip_extensions "$r1_file")
   fi
 
   echo "Running FASTP..."
@@ -72,8 +81,10 @@ process_files() {
     fi
   done
 
-  echo "Splitting into R1/R2..."
-  bash split_fastq.sh "$in_file" "$config_fn"
+  if [[ -n "$r2_file" ]]; then
+    echo "Splitting into R1/R2..."
+    bash split_fastq.sh "$in_file" "$config_fn"
+  fi
 }
 
 # process PE

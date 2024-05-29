@@ -14,10 +14,9 @@ export TMPDIR="${TMP}/$(basename $(mktemp -d))"
 mkdir -p ${TMPDIR}
 echo $TMPDIR
 
-# find all candidate fastq files for filtration
-find "$IN" -maxdepth 1 -type f -name '*_R1*.fastq' -exec sh -c 'for f; do echo "$f" >> "$TMPDIR/r1_files.txt"; done' sh {} +
-find "$IN" -maxdepth 1 -type f -name '*_R2*.fastq' -exec sh -c 'for f; do echo "$f" >> "$TMPDIR/r2_files.txt"; done' sh {} +
-find "$IN" -maxdepth 1 -type f -name '*.fastq' | grep -vE '_R[12]' > "$TMPDIR/other_files.txt"
+find "$IN" -maxdepth 1 -type f \( -name '*_R1*.fastq' -o -name '*_R1*.fastq.gz' \) -exec sh -c 'for f; do echo "$f"; done >> "$TMPDIR/r1_files.txt"' sh {} +
+find "$IN" -maxdepth 1 -type f \( -name '*_R2*.fastq' -o -name '*_R2*.fastq.gz' \) -exec sh -c 'for f; do echo "$f"; done >> "$TMPDIR/r2_files.txt"' sh {} +
+find "$IN" -maxdepth 1 -type f \( -name '*.fastq' -o -name '*.fastq.gz' \) | grep -vE '_R[12]' > "$TMPDIR/other_files.txt"
 
 echo "Found $(wc -l < "$TMPDIR/r1_files.txt") R1 FASTQ files" && echo "Found $(wc -l < "$TMPDIR/r2_files.txt") R2 FASTQ files" && [ $(wc -l < "$TMPDIR/r1_files.txt") -eq $(wc -l < "$TMPDIR/r2_files.txt") ] || echo "Warning: The number of R1 and R2 FASTQ files is not the same."
 echo "Found $(wc -l < "$TMPDIR/other_files.txt") other files"

@@ -21,6 +21,7 @@ max_retries=5
 
 while [ $retry_count -lt $max_retries ]; do
   # First, compute pseudo matching lengths
+  #cmd="$MOVI_PATH query --pml --index $MOVI_INDEX_PATH --reads $f" # updated
   cmd="$MOVI_PATH query $MOVI_INDEX_PATH $f"
   echo $cmd
   eval $cmd 2>&1
@@ -49,6 +50,7 @@ if [ ! -f "$f.default.mpml.bin" ]; then
 fi
 
 # Next, convert PMLs to readable format
+#cmd="$MOVI_PATH view --pml-file $f.default.mpml.bin > $f.mpml.txt" # updated
 cmd="$MOVI_PATH view $f.default.mpml.bin > $f.mpml.txt"
 echo $cmd
 eval $cmd 2>&1
