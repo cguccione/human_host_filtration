@@ -60,7 +60,12 @@ if [[ "${MODE}" == *"SE"* ]]; then
     mv "${TMPDIR}"/seqs_new_${new_basename}.fastq "${TMPDIR}"/seqs_${new_basename}.fastq
   done
 fi
+if [[ "${MODE}" == *"SE"* ]] && [[ "${MODE}" == *"PE"* ]]; then
+    echo "MODE contains both SE and PE so running splitter"
+    python /projects/benchmark-human-depletion/human_host_depletion/scripts/splitter.py "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}"/seqs_new_${new_basename}.fastq
+    mv "${TMPDIR}"/seqs_new_${new_basename}.fastq "${TMPDIR}"/seqs_${new_basename}.fastq
+fi
 
-python /projects/benchmark-human-depletion/human_host_depletion/scripts/splitter.py "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq"
+mv "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}"/${new_basename}.ALIGN-HPRC.fastq
 
-#mv "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq"
+

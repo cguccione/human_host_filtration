@@ -1,3 +1,19 @@
+# Random #
+###############
+fastp_out/
+minimap_indexes/
+slurm_out/
+
+# Not in paper #
+################
+configs_not_in_paper/
+configs_skin/
+
+# Old files #
+#############
+old/
+archive/
+
 # OS generated files #
 ######################
 .DS_Store
@@ -33,6 +49,7 @@ config.caitlin.sh
 .env
 .venv/
 *.pyc
+*.ipynb_checkpoints/
 
 # IDE specific files #
 ######################
@@ -45,3 +62,4 @@ config.caitlin.sh
 ######################
 data/host-filtered/
 logs/
+

@@ -38,7 +38,10 @@ if [[ "${MODE}" == *"SE"* ]]; then
   done
 fi
 
-python /projects/benchmark-human-depletion/human_host_depletion/scripts/splitter.py "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq"
-
-#Test this to make sure but this thing above should solve the issue
-#mv "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}"/${new_basename}.ALIGN-HPRC.fastq
+if [[ "${MODE}" == *"SE"* ]] && [[ "${MODE}" == *"PE"* ]]; then
+    echo "MODE contains both SE and PE so running splitter"
+    python /projects/benchmark-human-depletion/human_host_depletion/scripts/splitter.py "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}"/seqs_new_${new_basename}.fastq
+    mv "${TMPDIR}"/seqs_new_${new_basename}.fastq "${TMPDIR}"/seqs_${new_basename}.fastq
+fi
+  
+mv "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}"/${new_basename}.ALIGN-HPRC.fastq
