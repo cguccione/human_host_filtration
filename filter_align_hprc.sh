@@ -19,16 +19,26 @@ fi
 # run minimap2 and samtools based on the mode (PE or SE)
 new_basename="${basename%.*}"
 cp "${f}" "${TMPDIR}"/seqs_${new_basename}.fastq
-if [ "${MODE}" == "PE" ]; then
+if [[ "${MODE}" == *"PE"* ]]; then
   for mmi in "${MINIMAP2_HPRC_INDEX_PATH}"/*.mmi
   do
-    echo "Running minimap2 on ${mmi}"
-    minimap2 -2 -ax sr -t 7 "${mmi}" "${TMPDIR}"/seqs_${new_basename}.fastq | \
-      samtools fastq -@ 1 -f 12 -F 256 > "${TMPDIR}"/seqs_new_${new_basename}.fastq
+    echo "Running minimap2 (PE) on ${mmi}"
+    minimap2 -2 -ax sr -t "${THREADS}" "${mmi}" "${TMPDIR}"/seqs_${new_basename}.fastq | \
+      samtools fastq -@ "${THREADS}" -f 12 -F 256 > "${TMPDIR}"/seqs_new_${new_basename}.fastq
     mv "${TMPDIR}"/seqs_new_${new_basename}.fastq "${TMPDIR}"/seqs_${new_basename}.fastq
   done
-elif [ "${MODE}" == "SE" ]; then
-  continue
+fi
+if [[ "${MODE}" == *"SE"* ]]; then
+  for mmi in "${MINIMAP2_HPRC_INDEX_PATH}"/*.mmi
+  do
+    echo "Running minimap2 (SE) on ${mmi}"
+    minimap2 -2 -ax sr --no-pairing -t "${THREADS}" "${mmi}" "${TMPDIR}"/seqs_${new_basename}.fastq | \
+       samtools fastq -@ "${THREADS}" -f 4 -F 256 > "${TMPDIR}"/seqs_new_${new_basename}.fastq
+    mv "${TMPDIR}"/seqs_new_${new_basename}.fastq "${TMPDIR}"/seqs_${new_basename}.fastq 
+  done
 fi
 
-mv "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq"
+python /projects/benchmark-human-depletion/human_host_depletion/scripts/splitter.py "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}/${new_basename}.ALIGN-HPRC.fastq"
+
+#Test this to make sure but this thing above should solve the issue
+#mv "${TMPDIR}"/seqs_${new_basename}.fastq "${TMPDIR}"/${new_basename}.ALIGN-HPRC.fastq
