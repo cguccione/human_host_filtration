@@ -5,7 +5,7 @@
 
 config_fn=$2
 source $config_fn
-conda activate $CONDA_ENV_NAME
+#conda activate $CONDA_ENV_NAME
 
 f=$1
 basename=$(basename "$f" .fastq)
@@ -21,8 +21,7 @@ max_retries=5
 
 while [ $retry_count -lt $max_retries ]; do
   # First, compute pseudo matching lengths
-  #cmd="$MOVI_PATH query --pml --index $MOVI_INDEX_PATH --reads $f" # updated
-  cmd="$MOVI_PATH query $MOVI_INDEX_PATH $f"
+  cmd="$MOVI_PATH query --pml --index $MOVI_INDEX_PATH --reads $f" # updated
   echo $cmd
   eval $cmd 2>&1
 
@@ -50,8 +49,7 @@ if [ ! -f "$f.default.mpml.bin" ]; then
 fi
 
 # Next, convert PMLs to readable format
-#cmd="$MOVI_PATH view --pml-file $f.default.mpml.bin > $f.mpml.txt" # updated
-cmd="$MOVI_PATH view $f.default.mpml.bin > $f.mpml.txt"
+cmd="$MOVI_PATH view --pml-file $f.default.mpml.bin > $f.mpml.txt" # updated
 echo $cmd
 eval $cmd 2>&1
 # Check if command was successful
