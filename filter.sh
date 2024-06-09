@@ -13,10 +13,7 @@
 #SBATCH --output=logs/%x-%A_%a.out
 #SBATCH --error=logs/%x-%A_%a.err
 
-config_fn="config.example.sh"
-#config_fn="config.cg.hmf.sh"
-#config_fn="config.cg.100k.sh"
-
+config_fn="$1"
 source ${config_fn}
 echo "Beginning host filtration on directory: ${IN}"
 

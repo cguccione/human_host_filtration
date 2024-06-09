@@ -3,8 +3,10 @@
 # date: 12/22/23 
 # description: Script to run fastp on R1/R2 or interleaved FASTQ inputs as part of a full host filtration pipeline.
 
-config_fn=$3
+set -e 
+set -o pipefail
 
+config_fn=$3
 source $config_fn
 conda activate $CONDA_ENV_NAME
 

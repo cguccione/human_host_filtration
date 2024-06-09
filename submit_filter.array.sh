@@ -4,7 +4,6 @@
 # description: Script to run 
 
 config_fn=$1
-#config_fn="config.sh"
 source ${config_fn}
 export config_fn="${config_fn}"
 
