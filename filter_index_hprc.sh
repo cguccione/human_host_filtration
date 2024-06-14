@@ -24,8 +24,8 @@ max_retries=10
 
 while [ $retry_count -lt $max_retries ]; do
   # First, compute pseudo matching lengths
-  cmd="$MOVI_PATH query $MOVI_INDEX_PATH $f" 
-  #cmd="$MOVI_PATH query --pml --index $MOVI_INDEX_PATH --read $f" # updated
+  #cmd="$MOVI_PATH query $MOVI_INDEX_PATH $f" 
+  cmd="$MOVI_PATH query --pml --index $MOVI_INDEX_PATH --read $f" # updated
   echo $cmd
   eval $cmd 2>&1
 
@@ -53,8 +53,8 @@ if [ ! -f "$f.default.mpml.bin" ]; then
 fi
 
 # Next, convert PMLs to readable format
-cmd="$MOVI_PATH view $f.default.mpml.bin > $f.mpml.txt"
-#cmd="$MOVI_PATH view --pml-file $f.default.mpml.bin > $f.mpml.txt" # updated
+#cmd="$MOVI_PATH view $f.default.mpml.bin > $f.mpml.txt"
+cmd="$MOVI_PATH view --pml-file $f.default.mpml.bin > $f.mpml.txt" # updated
 echo $cmd
 eval $cmd 2>&1
 # Check if command was successful
@@ -73,8 +73,10 @@ if [ $lines_mpml_txt -ne $expected_lines_mpml_txt ]; then
   exit 1
 fi
 
-echo "python scripts/filter_pmls.py $f.mpml.txt $f $TMPDIR"
-python scripts/filter_pmls.py $f.mpml.txt $f $TMPDIR
+echo "python scripts/qiita_filter_pmls.py $f.mpml.txt $f $TMPDIR"
+python scripts/hf_filter_pmls.py $f.mpml.txt $f $TMPDIR | seqtk subseq $f - > "$TMPDIR/${basename}.fastq.mpml.non-human.fastq"
+#echo "seqtk subseq $f $TMPDIR/${basename}.non-human.ids.txt > $TMPDIR/${basename}.fastq.mpml.non-human.fastq"
+
 
 # Check if new .fastq files exist
 if [ ! -f "$TMPDIR/${basename}.fastq.mpml.non-human.fastq" ]; then
