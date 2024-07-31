@@ -60,6 +60,7 @@ dependencies:
   - ncurses=6.4=hcb278e6_0
   - numpy=1.25.2=py311h64a7726_0
   - openssl=3.1.2=hd590300_0
+  - pandas=2.1.4=py311ha02d727_0
   - pcre=8.45=h9c3ff4c_0
   - perl=5.32.1=4_hd590300_perl5
   - perl-archive-tar=2.40=pl5321hdfd78af_0
