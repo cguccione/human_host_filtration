@@ -38,13 +38,6 @@ if [[ "$MODE" != "PE" && "$MODE" != "SE" && "$MODE" != "PE+SE" ]]; then
     exit 1 
 else
 
-# check input path is valid (barnacle2 only)
-abs_path=$(realpath "$IN")
-if [[ "$HOSTNAME" == "barnacle2" && ( "$abs_path" == /home* || "$abs_path" == /projects* ) ]]; then    
-  echo "Input files are in /home or /projects. Please use /panfs for IO-intensive workloads such as host filtration."
-  exit 1
-fi
-
 # define filtration map
 declare -A file_map
 file_map["FASTP"]="filter_fastp.sh"
