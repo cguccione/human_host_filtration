@@ -1,7 +1,5 @@
 # Human Host Filtration Pipeline - Barnacle Edition [Knight Lab Specific]
 
-**Consider switching to barnacle_v2 branch now with updated code**
-
 **Note:** This branch follows the same protocol as the the main branch, except it is targeted at **Knight Lab specific users**. Here we provide paths that already exist in Barnacle2 so that users do not have to download new data or update them. Paths last confirmed on 03/04/2024. 
   
 This is a bioinformatics pipeline designed to provide highly-conservative depletion of human reads from metagenomic sequencing data. The pipeline is designed to be flexible and can be used with any host reference genome(s), though certain specific human reference genomes are suggested. The pipeline is designed to be used with paired-end Illumina sequencing data, but can be easily modified to work with single-end data. The pipeline is designed for SLURM and PBS job schedulers, but can be easily modified to run independently.
