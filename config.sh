@@ -14,15 +14,14 @@ THRESHOLD=0.175 # suggested thresholds are __ for "max", __ for "average", and 0
 MIN_RUN_LENGTH=5
 
 # configure software and reference paths
-CONDA_ENV_NAME="human-filtration"
-MOVI_PATH="/path/to/movi-default" # path to movi-default executable
-MOVI_INDEX_PATH="ref/movi" # path to prebuilt movi_index.bin
-MINIMAP2_PATH="$(which minimap2)" # path to minimap2 executable
-MINIMAP2_HG38_INDEX_PATH="ref/mmi/hg38.mmi" # one index
-MINIMAP2_T2T_INDEX_PATH="ref/mmi/t2t.mmi" # one index
-MINIMAP2_HPRC_INDEX_PATH="ref/mmi" # directory of indexes
-ADAPTERS="ref/known_adapters.fna"
-TMP="" # path to temporary directory for writing
+MOVI_PATH="/panfs/cguccion/packages/lucas_Movi/Movi/build/movi-default"  # path to movi-default executable on barnacle
+MOVI_INDEX_PATH="/scratch/movi_hg38_chm13_hprc94" # path to prebuilt movi_index.bin on barnacle, must be on a compute node
+MINIMAP2_PATH="minimap2" #Calling minimap2 from conda env
+MINIMAP2_HG38_INDEX_PATH="/scratch/databases/minimap2/human-GRC-db.mmi" # hg38 index on barnacle
+MINIMAP2_T2T_INDEX_PATH="/scratch/databases/minimap2/human-GCA-phix-db.mmi" # t2t index on barancle
+MINIMAP2_HPRC_INDEX_PATH="/scratch/databases/minimap2" # directory of pangenome indexes (including hg38 and t2t)
+ADAPTERS="ref/known_adapters.fna" #Known adapters (used in paper)
+TMP="/panfs/YOUR_USERNAME/tmp" #Change to your username on barnacle, create a TMP if you don't have one
 
 # END CONFIGURATION
 
