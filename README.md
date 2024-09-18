@@ -47,7 +47,7 @@ MIN_RUN_LENGTH=5
 
 # configure software and reference paths
 MOVI_PATH="/panfs/cguccion/packages/lucas_Movi/Movi/build/movi-default"  # path to movi-default executable on barnacle
-MOVI_INDEX_PATH="/panfs/lpatel/reference/movi_all" # path to prebuilt movi_index.bin on barnacle
+MOVI_INDEX_PATH="/scratch/movi_hg38_chm13_hprc94" # path to prebuilt movi_index.bin on barnacle
 MINIMAP2_PATH="minimap2" #Calling minimap2 from conda env
 MINIMAP2_HG38_INDEX_PATH="/scratch/databases/minimap2/human-GRC-db.mmi" # hg38 index on barnacle
 MINIMAP2_T2T_INDEX_PATH="/scratch/databases/minimap2/human-GCA-phix-db.mmi" # t2t index on barancle
