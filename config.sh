@@ -36,7 +36,7 @@ fi
 if [[ "$MODE" != "PE" && "$MODE" != "SE" && "$MODE" != "PE+SE" ]]; then
     echo "Error: Invalid MODE. MODE must be 'PE', 'SE', or 'PE+SE'."
     exit 1 
-else
+fi
 
 # define filtration map
 declare -A file_map
