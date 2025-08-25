@@ -22,7 +22,7 @@ process_fastp() {
   local r2=$2
   local base_name=$(strip_extensions "$r1")
 
-  local fastp_options="-l 100 -w ${THREADS} --adapter_fasta ${ADAPTERS} --html /dev/null --json /dev/null --stdout -i ${r1}" # --interleaved_in"
+  local fastp_options="-l 45 -w ${THREADS} --adapter_fasta ${ADAPTERS} --html /dev/null --json /dev/null --stdout -i ${r1}" # --interleaved_in"
   if [[ -n "${r2}" && -f "${r2}" ]]; then
     fastp_options+=" -I ${r2}"
   fi

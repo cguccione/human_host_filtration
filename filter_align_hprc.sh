@@ -10,6 +10,11 @@ config_fn=$2
 source $config_fn
 conda activate $CONDA_ENV_NAME
 
+module load gcc_9.3.0
+module load cmake_3.18.2
+export CC=$(which gcc)
+export CXX=$(which g++)
+
 f=$1
 basename=$(basename "$f" .fastq)
 

@@ -24,7 +24,7 @@ unweave() {
   local r1="$1"
   local basename_r1=$(basename "$r1" .fastq)
   local basename_r1="${basename_r1%.*}"
-  local basename_r2=$(echo "$basename_r1" | sed 's/_R1/_R2/')
+  local basename_r2=$(echo "$basename_r1" | sed 's/.R1/.R2/')
 
   if [ "$basename_r1" = "$basename_r2" ]; then
     # If no _R1 found, add suffix

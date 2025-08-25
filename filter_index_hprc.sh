@@ -10,6 +10,11 @@ config_fn=$2
 source $config_fn
 conda activate $CONDA_ENV_NAME
 
+module load gcc_9.3.0
+module load cmake_3.18.2
+export CC=$(which gcc)
+export CXX=$(which g++)
+
 f=$1
 basename=$(basename "$f" .fastq)
 
@@ -37,24 +42,24 @@ while [ $retry_count -lt $max_retries ]; do
   fi
 
   # Check if .bin file exists after command execution
-  if [ -f "$f.default.mpml.bin" ]; then
-    echo "Successfully created $f.default.mpml.bin."
+  if [ -f "$f.default.pml.bin" ]; then
+    echo "Successfully created $f.default.pml.bin."
     break
   else
-    echo "Attempt $(($retry_count + 1)) failed to create $f.default.mpml.bin."
+    echo "Attempt $(($retry_count + 1)) failed to create $f.default.pml.bin."
     retry_count=$(($retry_count + 1))
   fi
 done
 
 # Check if .bin file exists before converting PMLs
-if [ ! -f "$f.default.mpml.bin" ]; then
-  echo "Error: $f.default.mpml.bin does not exist."
+if [ ! -f "$f.default.pml.bin" ]; then
+  echo "Error: $f.default.pml.bin does not exist."
   exit 1
 fi
 
 # Next, convert PMLs to readable format
-#cmd="$MOVI_PATH view $f.default.mpml.bin > $f.mpml.txt"
-cmd="$MOVI_PATH view --pml-file $f.default.mpml.bin > $f.mpml.txt" # updated
+#cmd="$MOVI_PATH view $f.default.pml.bin > $f.pml.txt"
+cmd="$MOVI_PATH view --mls-file $f.default.pml.bin > $f.pml.txt" # updated
 echo $cmd
 eval $cmd 2>&1
 # Check if command was successful
@@ -65,25 +70,25 @@ fi
 
 # Compare line counts
 lines_reads=$(wc -l < "$f")
-lines_mpml_txt=$(wc -l < "$f.mpml.txt")
-expected_lines_mpml_txt=$((lines_reads / 2))
+lines_pml_txt=$(wc -l < "$f.pml.txt")
+expected_lines_pml_txt=$((lines_reads / 2))
 
-if [ $lines_mpml_txt -ne $expected_lines_mpml_txt ]; then
-  echo "Error: Line count of $f.mpml.txt does not match expected count."
+if [ $lines_pml_txt -ne $expected_lines_pml_txt ]; then
+  echo "Error: Line count of $f.pml.txt does not match expected count."
   exit 1
 fi
 
-echo "python scripts/qiita_filter_pmls.py $f.mpml.txt $f $TMPDIR"
-python scripts/hf_filter_pmls.py $f.mpml.txt $f $TMPDIR | seqtk subseq $f - > "$TMPDIR/${basename}.fastq.mpml.non-human.fastq"
-#echo "seqtk subseq $f $TMPDIR/${basename}.non-human.ids.txt > $TMPDIR/${basename}.fastq.mpml.non-human.fastq"
+echo "python scripts/qiita_filter_pmls.py $f.pml.txt $f $TMPDIR"
+python scripts/hf_filter_pmls.py $f.pml.txt $f $TMPDIR | seqtk subseq $f - > "$TMPDIR/${basename}.fastq.pml.non-human.fastq"
+#echo "seqtk subseq $f $TMPDIR/${basename}.non-human.ids.txt > $TMPDIR/${basename}.fastq.pml.non-human.fastq"
 
 
 # Check if new .fastq files exist
-if [ ! -f "$TMPDIR/${basename}.fastq.mpml.non-human.fastq" ]; then
-  echo "Error: $TMPDIR/${basename}.fastq.mpml.non-human.fastq does not exist."
+if [ ! -f "$TMPDIR/${basename}.fastq.pml.non-human.fastq" ]; then
+  echo "Error: $TMPDIR/${basename}.fastq.pml.non-human.fastq does not exist."
   exit 1
 fi
 
 new_basename="${basename%.*}"
-echo "$TMPDIR/${basename}.fastq.mpml.non-human.fastq" "$TMPDIR/${new_basename}.INDEX-HPRC.fastq"
-mv "$TMPDIR/${basename}.fastq.mpml.non-human.fastq" "$TMPDIR/${new_basename}.INDEX-HPRC.fastq"
+echo "$TMPDIR/${basename}.fastq.pml.non-human.fastq" "$TMPDIR/${new_basename}.INDEX-HPRC.fastq"
+mv "$TMPDIR/${basename}.fastq.pml.non-human.fastq" "$TMPDIR/${new_basename}.INDEX-HPRC.fastq"
